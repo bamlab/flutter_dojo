@@ -48,7 +48,7 @@ class DojoSurf extends DojoWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Surf Bam"),
+        title: Text(dojoName),
       ),
       body: SingleChildScrollView(
         child: Column(
