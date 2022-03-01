@@ -100,7 +100,7 @@ class AirTagItem extends StatelessWidget {
                             icon: Transform.rotate(
                                 angle: 45.0,
                                 child: Icon(
-                                  airtagsData.navigationIcon,
+                                  airtagsData.navifationIcon,
                                 )),
                             text: 'Navigate')),
                   ],
