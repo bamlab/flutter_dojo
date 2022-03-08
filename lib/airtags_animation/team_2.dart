@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class AirTagsAnimationTeam2 extends TeamWidget {
   const AirTagsAnimationTeam2({
     Key? key,
-  }) : super(key: key, teamName: 'Louis & Lucas');
+  }) : super(key: key, teamName: 'Valentin & Lucas');
 
   @override
   Widget build(BuildContext context) {
