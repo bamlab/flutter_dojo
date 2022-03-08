@@ -24,7 +24,7 @@ class AirTagsPageView extends StatefulWidget {
 }
 
 class _AirTagsPageViewState extends State<AirTagsPageView> {
-  final _controller = PageController(viewportFraction: 0.4);
+  final _controller = PageController(viewportFraction: 0.6);
 
   double get page =>
       _controller.positions.isNotEmpty == true ? _controller.page ?? 0 : 0.0;
@@ -53,33 +53,39 @@ class _AirTagsPageViewState extends State<AirTagsPageView> {
           AirTagItem(
             icon: Icons.access_alarm_outlined,
             title: 'Devices',
-            isSelected: page.floor() == 0,
+            isSelected: _pageSelect(0),
           ),
           AirTagItem(
             icon: Icons.abc,
             title: 'Items',
-            isSelected: page.floor() == 1,
+            isSelected: _pageSelect(1),
           ),
           AirTagItem(
             icon: Icons.person,
             title: 'Dogs',
-            isSelected: page.floor() == 2,
+            isSelected: _pageSelect(2),
           ),
           AirTagItem(
             icon: Icons.edit,
             title: 'Others',
-            isSelected: page.floor() == 3,
+            isSelected: _pageSelect(3),
           ),
         ],
       ),
     );
+  }
+
+  double _pageSelect(int index) {
+    return 1-(page > index ?  page - index: index-page).clamp(0, 1);
   }
 }
 
 class AirTagItem extends StatelessWidget {
   final String title;
   final IconData icon;
-  final bool isSelected;
+
+  // 0 = not selected, 1 = selected
+  final double isSelected;
 
   const AirTagItem({
     Key? key,
@@ -90,16 +96,17 @@ class AirTagItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Transform.translate(
-      offset: Offset(0, isSelected ? -20 : 0),
-      child: Center(
+    return Center(
+      child: Transform.translate(
+        offset: Offset(0, isSelected * -20),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          height: 50,
-          width: 50,
-          padding: const EdgeInsets.symmetric(horizontal: 30),
+          height: 200,
+          margin: const EdgeInsets.symmetric(horizontal: 30),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.black : Colors.red,
+            color: ColorTween(begin: Colors.black, end: Colors.red).evaluate(
+              AlwaysStoppedAnimation(isSelected),
+            ),
             borderRadius: BorderRadius.circular(50),
           ),
         ),
