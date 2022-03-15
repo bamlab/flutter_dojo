@@ -25,34 +25,7 @@ class AirTagsData {
 }
 
 class DojoAirTags extends DojoWidget {
-  const DojoAirTags({
+  DojoAirTags({
     Key? key,
-  }) : super(key: key, dojoName: 'AirTags');
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(dojoName),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: _teams
-              .map((e) => ListTile(
-                    title: Text(e.teamName),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => e,
-                        ),
-                      );
-                    },
-                  ))
-              .toList(),
-        ),
-      ),
-    );
-  }
+  }) : super(key: key, dojoName: 'AirTags', teams: _teams);
 }

@@ -25,34 +25,7 @@ class AirTagsData {
 }
 
 class DojoAirTagsAnimation extends DojoWidget {
-  const DojoAirTagsAnimation({
+  DojoAirTagsAnimation({
     Key? key,
-  }) : super(key: key, dojoName: 'AirTags Animation');
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(dojoName),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: _teams
-              .map((e) => ListTile(
-                    title: Text(e.teamName),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => e,
-                        ),
-                      );
-                    },
-                  ))
-              .toList(),
-        ),
-      ),
-    );
-  }
+  }) : super(key: key, dojoName: 'AirTags Animation', teams: _teams);
 }
