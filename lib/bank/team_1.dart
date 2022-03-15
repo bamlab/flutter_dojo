@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class BankTeam1 extends TeamWidget {
   const BankTeam1({
     Key? key,
-  }) : super(key: key, teamName: 'Valentin & Lucas');
+  }) : super(key: key, teamName: 'Matthieu Lucas');
 
   @override
   Widget build(BuildContext context) {
