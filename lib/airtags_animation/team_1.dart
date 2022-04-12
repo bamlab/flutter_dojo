@@ -60,17 +60,19 @@ class _SelectableListState extends State<_SelectableList> {
       clipBehavior: Clip.none,
       child: Row(
         children: List.generate(
-            listTitles.length,
-            (index) => GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedIndex = index;
-                  });
-                },
-                child: _SelectableCard(
-                  isSelected: index == selectedIndex,
-                  title: listTitles[index],
-                ))),
+          listTitles.length,
+          (index) => GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedIndex = index;
+              });
+            },
+            child: _SelectableCard(
+              isSelected: index == selectedIndex,
+              title: listTitles[index],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -98,26 +100,32 @@ class __SelectableCardState extends State<_SelectableCard>
   late final Animation<Offset> _offsetAnimation = Tween<Offset>(
     begin: Offset.zero,
     end: const Offset(0, -12),
-  ).animate(CurvedAnimation(
-    parent: _controller,
-    curve: Curves.easeIn,
-  ));
+  ).animate(
+    CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    ),
+  );
 
   late final Animation<Color?> _colorAnimation = ColorTween(
     begin: Colors.white,
     end: Colors.black,
-  ).animate(CurvedAnimation(
-    parent: _controller,
-    curve: Curves.easeIn,
-  ));
+  ).animate(
+    CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    ),
+  );
 
   late final Animation<Color?> _textColorAnimation = ColorTween(
     begin: Colors.black,
     end: Colors.white,
-  ).animate(CurvedAnimation(
-    parent: _controller,
-    curve: Curves.easeIn,
-  ));
+  ).animate(
+    CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    ),
+  );
 
   @override
   void initState() {
@@ -156,8 +164,9 @@ class __SelectableCardState extends State<_SelectableCard>
         padding: const EdgeInsets.all(8.0),
         child: Container(
           decoration: BoxDecoration(
-              color: _colorAnimation.value,
-              borderRadius: BorderRadius.circular(8)),
+            color: _colorAnimation.value,
+            borderRadius: BorderRadius.circular(8),
+          ),
           height: 100,
           width: 100,
           child: Center(

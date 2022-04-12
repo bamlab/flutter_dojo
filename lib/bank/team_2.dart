@@ -77,7 +77,9 @@ class _BankButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          shape: BoxShape.circle, border: Border.all(color: Colors.black12)),
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.black12),
+      ),
       child: Icon(
         icon,
         color: Colors.black,
@@ -94,15 +96,16 @@ class BankUserCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-          boxShadow: [
-            BoxShadow(
-              color: const Color.fromARGB(255, 120, 125, 128).withOpacity(0.15),
-              offset: const Offset(0, 25),
-              blurRadius: 20,
-            ),
-          ]),
+        color: Colors.white,
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color.fromARGB(255, 120, 125, 128).withOpacity(0.15),
+            offset: const Offset(0, 25),
+            blurRadius: 20,
+          ),
+        ],
+      ),
       child: SizedBox(
         height: 50,
         child: Row(
@@ -110,8 +113,10 @@ class BankUserCard extends StatelessWidget {
             const SizedBox(
               height: 50,
               child: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      'https://cdn.shopify.com/s/files/1/1286/1203/collections/snoopy-logo.png?v=1631603428')),
+                backgroundImage: NetworkImage(
+                  'https://cdn.shopify.com/s/files/1/1286/1203/collections/snoopy-logo.png?v=1631603428',
+                ),
+              ),
             ),
             const SizedBox(width: 10),
             Column(

@@ -27,22 +27,24 @@ class _ListOfCardsState extends State<ListOfCards> {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: 300),
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: [
-            ...List.generate(
-                5,
-                (index) => MyCard(
-                      onTap: (() {
-                        setState(() {
-                          _currrentIndex = index;
-                        });
-                      }),
-                      isSelected: index == _currrentIndex,
-                    ))
-          ],
-        ));
+      constraints: const BoxConstraints(maxHeight: 300),
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          ...List.generate(
+            5,
+            (index) => MyCard(
+              onTap: (() {
+                setState(() {
+                  _currrentIndex = index;
+                });
+              }),
+              isSelected: index == _currrentIndex,
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
 
@@ -71,8 +73,9 @@ class MyCard extends StatelessWidget {
                 // width: 200,
                 // height: 200,
                 child: Card(
-                    color: isSelected ? Colors.amber : Colors.red,
-                    child: const Center(child: Text("Hello"))),
+                  color: isSelected ? Colors.amber : Colors.red,
+                  child: const Center(child: Text("Hello")),
+                ),
               ),
             ),
           )

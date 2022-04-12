@@ -25,12 +25,13 @@ class SurfTeam3 extends TeamWidget {
               floating: false,
               pinned: true,
               flexibleSpace: FlexibleSpaceBar(
-                  centerTitle: true,
-                  title: const _SpotInfos(),
-                  background: Image.network(
-                    data.surfUrl,
-                    fit: BoxFit.cover,
-                  )),
+                centerTitle: true,
+                title: const _SpotInfos(),
+                background: Image.network(
+                  data.surfUrl,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
           ];
         },
@@ -53,8 +54,9 @@ class _Leading extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
         child: Container(
           decoration: BoxDecoration(
-              color: data.primary.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(20)),
+            color: data.primary.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(20),
+          ),
           padding: const EdgeInsets.all(16),
           child: Icon(icon),
         ),
@@ -107,8 +109,11 @@ class _Content extends StatelessWidget {
           Text("A popular beach ...."),
           Spacer(),
           Center(
-              child: ElevatedButton(
-                  onPressed: null, child: Text("check in +10 pointss")))
+            child: ElevatedButton(
+              onPressed: null,
+              child: Text("check in +10 pointss"),
+            ),
+          )
         ],
       ),
     );

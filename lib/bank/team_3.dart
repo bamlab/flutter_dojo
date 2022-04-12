@@ -23,8 +23,9 @@ class BankTeam3 extends TeamWidget {
             Container(
               width: 56,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
-                  border: Border.all(color: Colors.grey[200]!, width: 2)),
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(color: Colors.grey[200]!, width: 2),
+              ),
               child: const IconButton(
                 icon: Icon(
                   Icons.arrow_back,
@@ -44,8 +45,9 @@ class BankTeam3 extends TeamWidget {
           Container(
             width: 56,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                border: Border.all(color: Colors.grey[200]!, width: 2)),
+              borderRadius: BorderRadius.circular(100),
+              border: Border.all(color: Colors.grey[200]!, width: 2),
+            ),
             child: const IconButton(
               icon: Icon(
                 Icons.add_alert_outlined,
@@ -59,21 +61,23 @@ class BankTeam3 extends TeamWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 28),
-        child: Column(children: [
-          const _Title(),
-          const SizedBox(
-            height: 8,
-          ),
-          _Card(data: data),
-          const SizedBox(
-            height: 24,
-          ),
-          const _TextInput(),
-          const SizedBox(
-            height: 24,
-          ),
-          const _Amount(),
-        ]),
+        child: Column(
+          children: [
+            const _Title(),
+            const SizedBox(
+              height: 8,
+            ),
+            _Card(data: data),
+            const SizedBox(
+              height: 24,
+            ),
+            const _TextInput(),
+            const SizedBox(
+              height: 24,
+            ),
+            const _Amount(),
+          ],
+        ),
       ),
     );
   }
@@ -92,12 +96,14 @@ class _Card extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("SEND TO",
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            )),
+        const Text(
+          "SEND TO",
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -148,11 +154,15 @@ class _Title extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-        child: Text(
-      "Send Money",
-      style: TextStyle(
-          color: Colors.black, fontSize: 28, fontWeight: FontWeight.w500),
-    ));
+      child: Text(
+        "Send Money",
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 28,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
   }
 }
 

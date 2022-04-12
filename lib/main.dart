@@ -2,6 +2,7 @@ import 'package:bam_dojo/airtags/airtags.dart';
 import 'package:bam_dojo/airtags_animation/airtags.dart';
 import 'package:bam_dojo/bank/bank.dart';
 import 'package:bam_dojo/bank_animation/bank_animation.dart';
+import 'package:bam_dojo/calendar/calendar.dart';
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:bam_dojo/surf/surf.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,8 @@ final _dojos = <DojoWidget>[
   DojoAirTags(),
   DojoAirTagsAnimation(),
   DojoBank(),
-  DojoBankAnimation()
+  DojoBankAnimation(),
+  DojoCalendar()
 ];
 
 class DojoPicker extends StatelessWidget {
@@ -48,17 +50,19 @@ class DojoPicker extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: _dojos
-              .map((e) => ListTile(
-                    title: Text(e.dojoName),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => e,
-                        ),
-                      );
-                    },
-                  ))
+              .map(
+                (e) => ListTile(
+                  title: Text(e.dojoName),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => e,
+                      ),
+                    );
+                  },
+                ),
+              )
               .toList(),
         ),
       ),

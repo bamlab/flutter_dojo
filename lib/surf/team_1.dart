@@ -98,9 +98,11 @@ class AvatarsRow extends StatelessWidget {
 }
 
 class SurfAvatarMore extends StatelessWidget {
-  const SurfAvatarMore(
-      {Key? key, required this.size, required this.remainingCount})
-      : super(key: key);
+  const SurfAvatarMore({
+    Key? key,
+    required this.size,
+    required this.remainingCount,
+  }) : super(key: key);
   final double size;
   final int remainingCount;
   @override
