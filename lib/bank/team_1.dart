@@ -45,15 +45,20 @@ class BankTeam1 extends TeamWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Center(
-                child: Text('Send money', style: TextStyle(fontSize: 24))),
+              child: Text('Send money', style: TextStyle(fontSize: 24)),
+            ),
             const SizedBox(height: 16),
-            const Text('Send to',
-                style: TextStyle(fontSize: 12, color: Colors.grey)),
+            const Text(
+              'Send to',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
             const SizedBox(height: 16),
             const _PeopleCard(),
             const SizedBox(height: 24),
-            const Text('MASSAGE (OPTIONAL)',
-                style: TextStyle(fontSize: 12, color: Colors.grey)),
+            const Text(
+              'MASSAGE (OPTIONAL)',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
             const SizedBox(height: 8),
             CupertinoTextField(
               placeholder: 'I already sent bro!',
@@ -108,10 +113,11 @@ class _PeopleCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              offset: const Offset(0, 10),
-              blurRadius: 18,
-              spreadRadius: 10),
+            color: Colors.black.withOpacity(0.06),
+            offset: const Offset(0, 10),
+            blurRadius: 18,
+            spreadRadius: 10,
+          ),
         ],
       ),
       padding: const EdgeInsets.all(8),

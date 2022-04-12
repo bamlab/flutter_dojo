@@ -12,15 +12,17 @@ class AirTagsTeam2 extends TeamWidget {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Stack(clipBehavior: Clip.none, children: [
-            Card(
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Card(
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -28,22 +30,26 @@ class AirTagsTeam2 extends TeamWidget {
                       const SizedBox(
                         height: 10,
                       ),
-                      Row(children: [
-                        iconItem(),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        iconItem(),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        iconItem()
-                      ]),
-                    ]),
+                      Row(
+                        children: [
+                          iconItem(),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          iconItem(),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          iconItem()
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-            const Positioned(right: 30, top: -20, child: Scooter()),
-          ]),
+              const Positioned(right: 30, top: -20, child: Scooter()),
+            ],
+          ),
         ),
       ),
     );
@@ -64,8 +70,10 @@ class Scooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Image(
-        width: 80,
-        image: NetworkImage(
-            'https://firebasestorage.googleapis.com/v0/b/orga-47ea2.appspot.com/o/assets%2FPikPng.com_scooty-png_384580.png?alt=media&token=71b0a1d7-9e6c-44f5-9d67-af10cccc6841'));
+      width: 80,
+      image: NetworkImage(
+        'https://firebasestorage.googleapis.com/v0/b/orga-47ea2.appspot.com/o/assets%2FPikPng.com_scooty-png_384580.png?alt=media&token=71b0a1d7-9e6c-44f5-9d67-af10cccc6841',
+      ),
+    );
   }
 }

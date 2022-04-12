@@ -29,10 +29,12 @@ class AirTagsTeam3 extends TeamWidget {
               shrinkWrap: true,
               reverse: true,
               children: data
-                  .map((item) => AirTagItem(
-                        title: item['name']!,
-                        imageUrl: item['imageUrl']!,
-                      ))
+                  .map(
+                    (item) => AirTagItem(
+                      title: item['name']!,
+                      imageUrl: item['imageUrl']!,
+                    ),
+                  )
                   .toList(),
             ),
           )
@@ -67,51 +69,62 @@ class AirTagItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(clipBehavior: Clip.none, children: [
-      Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Material(
-          elevation: 5,
-          borderRadius: BorderRadius.circular(30),
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 25),
-                ),
-                const InfoRow(
-                  carTime: 8,
-                  walTime: 13,
-                  batteryPercentage: 41,
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Material(
+            elevation: 5,
+            borderRadius: BorderRadius.circular(30),
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25,
+                    ),
+                  ),
+                  const InfoRow(
+                    carTime: 8,
+                    walTime: 13,
+                    batteryPercentage: 41,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
                         child: Button(
-                            icon: Icon(airtagsData.playIcon), text: 'Play')),
-                    Expanded(
+                          icon: Icon(airtagsData.playIcon),
+                          text: 'Play',
+                        ),
+                      ),
+                      Expanded(
                         child: Button(
-                            icon: Transform.rotate(
-                                angle: 45.0,
-                                child: Icon(
-                                  airtagsData.navifationIcon,
-                                )),
-                            text: 'Navigate')),
-                  ],
-                )
-              ],
+                          icon: Transform.rotate(
+                            angle: 45.0,
+                            child: Icon(
+                              airtagsData.navifationIcon,
+                            ),
+                          ),
+                          text: 'Navigate',
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
         ),
-      ),
-      ItemImage(imageUrl: imageUrl),
-    ]);
+        ItemImage(imageUrl: imageUrl),
+      ],
+    );
   }
 }
 
@@ -164,7 +177,9 @@ class Button extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: Colors.grey[200], borderRadius: BorderRadius.circular(30)),
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(30),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

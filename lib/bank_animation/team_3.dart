@@ -35,19 +35,24 @@ class _BottomBankState extends State<_BottomBank> {
           style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
         ),
         MaterialButton(
-            color: Colors.grey[200],
-            child: const Text('Reset Amount'),
-            elevation: 0,
-            onPressed: () {
+          color: Colors.grey[200],
+          child: const Text('Reset Amount'),
+          elevation: 0,
+          onPressed: () {
+            setState(() {
+              _currentValue = '0';
+            });
+          },
+        ),
+        Expanded(
+          child: NumKeyboard(
+            onNumSelected: (String value) {
               setState(() {
-                _currentValue = '0';
+                _currentValue += value;
               });
-            }),
-        Expanded(child: NumKeyboard(onNumSelected: (String value) {
-          setState(() {
-            _currentValue += value;
-          });
-        }))
+            },
+          ),
+        )
       ],
     );
   }
@@ -69,7 +74,9 @@ class _Button extends StatelessWidget {
       onTap: () => onTap(number),
       child: Container(
         decoration: BoxDecoration(
-            shape: BoxShape.circle, border: Border.all(color: Colors.black12)),
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.black12),
+        ),
         child: Center(
           child: Text(
             number,
@@ -101,7 +108,9 @@ class NumKeyboard extends StatelessWidget {
             return _Button(number: '.', onTap: onNumSelected);
           default:
             return _Button(
-                number: (index + 1).toString(), onTap: onNumSelected);
+              number: (index + 1).toString(),
+              onTap: onNumSelected,
+            );
         }
       }),
     );

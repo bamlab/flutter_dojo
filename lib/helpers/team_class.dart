@@ -26,17 +26,19 @@ abstract class DojoWidget extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: teams
-              .map((e) => ListTile(
-                    title: Text(e.teamName),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => e,
-                        ),
-                      );
-                    },
-                  ))
+              .map(
+                (e) => ListTile(
+                  title: Text(e.teamName),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => e,
+                      ),
+                    );
+                  },
+                ),
+              )
               .toList(),
         ),
       ),
