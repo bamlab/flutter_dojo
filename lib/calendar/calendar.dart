@@ -14,30 +14,34 @@ class Event {
   final DateTime startDate;
   final DateTime endDate;
   final String name;
+  final Color color;
 
-  Event(this.startDate, this.endDate, this.name);
+  Event(this.startDate, this.endDate, this.name, this.color);
 }
 
 class CalendarData {
-  final green = const Color(0xFFEEF7EB);
-  final pink = const Color(0xFFFDEBF8);
-  final blue = const Color(0XFFE7F6FC);
+  final green = const Color(0xFF71F146);
+  final pink = const Color(0xFFEA55C1);
+  final blue = const Color(0xFF5569EA);
 
-  final events = <Event>[
+  late final events = <Event>[
     Event(
       DateTime(2022, 1, 1, 10, 0, 0),
       DateTime(2022, 1, 1, 11, 0, 0),
       'Piscine',
+      green,
     ),
     Event(
       DateTime(2022, 1, 1, 13, 0, 0),
       DateTime(2022, 1, 1, 14, 30, 0),
       'Karaoké',
+      pink,
     ),
     Event(
       DateTime(2022, 1, 1, 16, 0, 0),
       DateTime(2022, 1, 1, 17, 0, 0),
       'Concert',
+      blue,
     ),
   ];
 }
