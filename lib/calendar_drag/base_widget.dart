@@ -1,12 +1,12 @@
-import 'package:bam_dojo/helpers/team_class.dart';
+import 'package:bam_dojo/calendar/calendar.dart';
 import 'package:flutter/material.dart';
 
-import 'calendar.dart';
-
-class CalendarTeam1 extends TeamWidget {
+class CalendarTeam1 extends StatelessWidget {
   const CalendarTeam1({
     Key? key,
-  }) : super(key: key, teamName: 'Louis Lucas');
+  }) : super(
+          key: key,
+        );
 
   @override
   Widget build(BuildContext context) {
