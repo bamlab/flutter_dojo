@@ -1,8 +1,8 @@
 import 'package:bam_dojo/calendar/calendar.dart';
 import 'package:flutter/material.dart';
 
-class CalendarTeam1 extends StatelessWidget {
-  const CalendarTeam1({
+class BaseCalendarTeam1 extends StatelessWidget {
+  const BaseCalendarTeam1({
     Key? key,
   }) : super(
           key: key,
