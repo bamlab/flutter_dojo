@@ -1,4 +1,4 @@
-import 'package:bam_dojo/calendar/calendar.dart';
+import 'package:bam_dojo/calendar_responsive/calendar_responsive.dart';
 import 'package:flutter/material.dart';
 
 class BaseCalendarTeam1 extends StatelessWidget {
@@ -24,7 +24,7 @@ class BaseCalendarTeam1 extends StatelessWidget {
           itemBuilder: (context, index) {
             Widget child;
             final eventIndex = CalendarData().events.indexWhere(
-                  (event) => event.startDate.hour == index,
+                  (event) => event.startDate.hour == index + 4,
                 );
             if (eventIndex == -1) {
               child = const SizedBox.shrink();
