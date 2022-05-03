@@ -6,6 +6,7 @@ import 'package:bam_dojo/calendar/calendar.dart';
 import 'package:bam_dojo/calendar_drag/calendar_drag.dart';
 import 'package:bam_dojo/calendar_responsive/calendar_responsive.dart';
 import 'package:bam_dojo/helpers/team_class.dart';
+import 'package:bam_dojo/sign_up/sign_up.dart';
 import 'package:bam_dojo/surf/surf.dart';
 import 'package:flutter/material.dart';
 
@@ -37,6 +38,7 @@ final _dojos = <DojoWidget>[
   DojoCalendar(),
   DojoCalendarDrag(),
   DojoCalendarResponsive(),
+  DojoSignUp(),
 ];
 
 class DojoPicker extends StatelessWidget {
