@@ -8,9 +8,9 @@ class SignUpTeam1 extends TeamWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Colors.red,
-      body: _ShowBottom(),
+    return Scaffold(
+      backgroundColor: Colors.pink.shade400,
+      body: const _ShowBottom(),
     );
   }
 }
@@ -100,19 +100,31 @@ class _SheetState extends State<_Sheet> with SingleTickerProviderStateMixin {
           ),
           Align(
             alignment: Alignment.bottomRight,
-            child: SizedBox(
-              height: 72,
-              child: FloatingActionButton.extended(
-                onPressed: () {
-                  animationController.forward();
-                  setState(() {
-                    opacity = 1;
-                  });
-                },
-                label: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('Get started'),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(42),
                 ),
+              ),
+              onPressed: () {
+                animationController.forward();
+                setState(() {
+                  opacity = 1;
+                });
+              },
+              child: Container(
+                width: 200,
+                height: 72,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(36.0),
+                  gradient: LinearGradient(
+                    colors: [Colors.red.shade400, Colors.pink.shade200],
+                  ),
+                ),
+                alignment: Alignment.center,
+                child:
+                    const Text('Get started', style: TextStyle(fontSize: 20)),
               ),
             ),
           ),
