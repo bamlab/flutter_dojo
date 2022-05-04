@@ -25,7 +25,6 @@ class _ShowBottom extends StatefulWidget {
 class _ShowBottomState extends State<_ShowBottom> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     Future.delayed(Duration.zero, () {
       showModalBottomSheet(
@@ -60,6 +59,7 @@ class _SheetState extends State<_Sheet> with SingleTickerProviderStateMixin {
     duration: const Duration(milliseconds: 250),
     vsync: this,
   );
+  bool _isInAccountCreationMode = false;
 
   double opacity = 0;
 
@@ -88,12 +88,13 @@ class _SheetState extends State<_Sheet> with SingleTickerProviderStateMixin {
           const SizedBox(
             height: 16,
           ),
-          const Text(
-            "Find local community events",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 36,
-            ),
+          AnimatedCrossFade(
+            firstChild: const LandingContent(),
+            secondChild: const AccountCreationForm(),
+            crossFadeState: _isInAccountCreationMode
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 250),
           ),
           const SizedBox(
             height: 120,
@@ -109,6 +110,7 @@ class _SheetState extends State<_Sheet> with SingleTickerProviderStateMixin {
               ),
               onPressed: () {
                 animationController.forward();
+                _isInAccountCreationMode = true;
                 setState(() {
                   opacity = 1;
                 });
@@ -123,8 +125,25 @@ class _SheetState extends State<_Sheet> with SingleTickerProviderStateMixin {
                   ),
                 ),
                 alignment: Alignment.center,
-                child:
-                    const Text('Get started', style: TextStyle(fontSize: 20)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    AnimatedCrossFade(
+                      firstChild: const Text('Get started',
+                          style: TextStyle(fontSize: 18)),
+                      secondChild: const Text('Create account',
+                          style: TextStyle(fontSize: 16)),
+                      crossFadeState: _isInAccountCreationMode
+                          ? CrossFadeState.showSecond
+                          : CrossFadeState.showFirst,
+                      duration: const Duration(milliseconds: 250),
+                    ),
+                    const Icon(
+                      Icons.chevron_right,
+                      size: 24,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -136,6 +155,107 @@ class _SheetState extends State<_Sheet> with SingleTickerProviderStateMixin {
               child: const Align(
                 alignment: Alignment.bottomLeft,
                 child: Text('Coucou'),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class LandingContent extends StatelessWidget {
+  const LandingContent({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Find local community events",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 36,
+          ),
+        ),
+        const SizedBox(
+          height: 16,
+        ),
+        Text(
+          "Get involved with what's happening near you",
+          style: TextStyle(fontSize: 18, color: Colors.blueGrey.shade300),
+        )
+      ],
+    );
+  }
+}
+
+class AccountCreationForm extends StatelessWidget {
+  const AccountCreationForm({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: const [
+        Text(
+          "Create an account",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 26,
+          ),
+        ),
+        SizedBox(
+          height: 32,
+        ),
+        MyTextField(label: 'Email address', icon: Icons.email),
+        MyTextField(
+          label: 'Password',
+          icon: Icons.lock,
+          hidden: true,
+        ),
+      ],
+    );
+  }
+}
+
+class MyTextField extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool hidden;
+
+  const MyTextField(
+      {Key? key, required this.label, required this.icon, this.hidden = false})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Row(
+        children: [
+          Flexible(
+            child: TextField(
+              cursorColor: Colors.pink.shade400,
+              obscureText: hidden,
+              autocorrect: !hidden,
+              enableSuggestions: !hidden,
+              decoration: InputDecoration(
+                labelText: label,
+                labelStyle: TextStyle(
+                  color: Colors.grey.shade400,
+                  fontSize: 18,
+                ),
+                suffixIcon: Icon(
+                  icon,
+                  color: Colors.grey.shade400,
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.pink.shade400,
+                  ),
+                ),
               ),
             ),
           ),
