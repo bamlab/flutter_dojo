@@ -26,20 +26,20 @@ class CalendarData {
 
   late final events = <Event>[
     Event(
-      DateTime(2022, 1, 1, 10, 0, 0),
-      DateTime(2022, 1, 1, 11, 0, 0),
+      DateTime(2022, 1, 1, 6, 0, 0),
+      DateTime(2022, 1, 1, 7, 0, 0),
       'Piscine',
       green,
     ),
     Event(
-      DateTime(2022, 1, 1, 13, 0, 0),
-      DateTime(2022, 1, 1, 14, 30, 0),
+      DateTime(2022, 1, 1, 8, 0, 0),
+      DateTime(2022, 1, 1, 10, 30, 0),
       'Karaoké',
       pink,
     ),
     Event(
-      DateTime(2022, 1, 1, 16, 0, 0),
-      DateTime(2022, 1, 1, 17, 0, 0),
+      DateTime(2022, 1, 1, 11, 0, 0),
+      DateTime(2022, 1, 1, 12, 0, 0),
       'Concert',
       blue,
     ),

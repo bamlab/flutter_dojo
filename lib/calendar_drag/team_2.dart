@@ -10,7 +10,7 @@ class CalendarTeam2 extends TeamWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: CalendarTeam(),
     );
   }
@@ -47,9 +47,11 @@ class _CalendarTeamState extends State<CalendarTeam> {
 }
 
 class _CreateEventHandler extends StatefulWidget {
-  const _CreateEventHandler(
-      {Key? key, required this.child, required this.height})
-      : super(key: key);
+  const _CreateEventHandler({
+    Key? key,
+    required this.child,
+    required this.height,
+  }) : super(key: key);
 
   final Widget child;
   final double height;
@@ -62,8 +64,8 @@ class _CreateEventHandlerState extends State<_CreateEventHandler> {
   var _isDragging = false;
   var _initialPosTop = 0.0;
   var _initialPosBottom = 0.0;
-  double? maybeTopPos = null;
-  double? maybeBottomPos = null;
+  double? maybeTopPos;
+  double? maybeBottomPos;
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +107,7 @@ class _CreateEventHandlerState extends State<_CreateEventHandler> {
             Positioned(
               top: maybeTopPos ?? _initialPosTop,
               height: (maybeBottomPos ?? _initialPosBottom) -
-                  (maybeTopPos ?? _initialPosTop)                  ,
+                  (maybeTopPos ?? _initialPosTop),
               left: 0,
               right: 0,
               child: Container(
