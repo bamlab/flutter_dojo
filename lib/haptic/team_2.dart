@@ -1,6 +1,7 @@
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
+import 'package:video_player/video_player.dart';
 
 class HapticTeam2 extends TeamWidget {
   const HapticTeam2({
@@ -18,13 +19,9 @@ class PhysicsCardDragDemo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: const DraggableCard(
-        child: FlutterLogo(
-          size: 128,
-        ),
-      ),
+    return const Scaffold(
+      backgroundColor: Colors.black,
+      body: DraggableCard(),
     );
   }
 }
@@ -32,9 +29,7 @@ class PhysicsCardDragDemo extends StatelessWidget {
 /// A draggable card that moves back to [Alignment.center] when it's
 /// released.
 class DraggableCard extends StatefulWidget {
-  const DraggableCard({required this.child, Key? key}) : super(key: key);
-
-  final Widget child;
+  const DraggableCard({Key? key}) : super(key: key);
 
   @override
   _DraggableCardState createState() => _DraggableCardState();
@@ -58,7 +53,6 @@ class _DraggableCardState extends State<DraggableCard>
 
   /// Calculates and runs a [SpringSimulation].
   void _runAnimation(Offset pixelsPerSecond, Size size) {
-    print(_dragAlignment.y);
     _animation = _controller.drive(
       AlignmentTween(
         begin: _dragAlignment,
@@ -84,6 +78,9 @@ class _DraggableCardState extends State<DraggableCard>
     _controller.animateWith(simulation);
   }
 
+  late VideoPlayerController _videoController;
+  late VideoPlayerController _videoController2;
+
   @override
   void initState() {
     super.initState();
@@ -94,27 +91,68 @@ class _DraggableCardState extends State<DraggableCard>
         _dragAlignment = _animation.value;
       });
     });
+
+    _videoController = VideoPlayerController.asset(
+      'assets/videos/Untitled.mov',
+      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+    )
+      ..initialize().then((_) {
+        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+        setState(() {});
+      })
+      ..play()
+      ..setLooping(true);
+
+    _videoController2 = VideoPlayerController.asset(
+      'assets/videos/Untitled2.mov',
+      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+    )
+      ..initialize().then((_) {
+        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+        setState(() {});
+      })
+      ..play()
+      ..setLooping(true);
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _videoController.dispose();
+    _videoController2.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final width = isFreelyDragged ? 50.0 : size.width;
-    final height = isFreelyDragged ? 50.0 : size.height / 2;
-    print(isFreelyDragged);
-    print(panPosition);
+    final width = isFreelyDragged ? 100.0 : size.width;
+    final height = isFreelyDragged ? 100.0 : size.height / 2;
+    final underHeight = isFreelyDragged ? size.height : size.height / 2;
+
+    final Size controllerSize = _videoController.value.size;
+
     return Stack(
       children: [
-        Container(
-          color: Colors.amber,
-          width: double.infinity,
-          height: 200,
+        Padding(
+          padding: const EdgeInsets.all(8.0) + const EdgeInsets.only(top: 32),
+          child: AnimatedContainer(
+            width: size.width,
+            height: underHeight - 62,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
+            clipBehavior: Clip.hardEdge,
+            duration: const Duration(milliseconds: 50),
+            child: FittedBox(
+              alignment: Alignment.center,
+              clipBehavior: Clip.hardEdge,
+              fit: BoxFit.fitHeight,
+              child: SizedBox(
+                width: controllerSize.width,
+                height: controllerSize.height,
+                child: VideoPlayer(_videoController2),
+              ),
+            ),
+          ),
         ),
         GestureDetector(
           onPanDown: (details) {
@@ -139,12 +177,25 @@ class _DraggableCardState extends State<DraggableCard>
                     (panPosition!.dy / size.height) * 2 - 1 - 0.2,
                   )
                 : _dragAlignment,
-            child: AnimatedContainer(
-              width: width,
-              height: height,
-              duration: const Duration(milliseconds: 50),
-              child: Card(
-                child: widget.child,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: AnimatedContainer(
+                width: width,
+                height: height,
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(16)),
+                clipBehavior: Clip.hardEdge,
+                duration: const Duration(milliseconds: 50),
+                child: FittedBox(
+                  alignment: Alignment.center,
+                  clipBehavior: Clip.hardEdge,
+                  fit: BoxFit.fitHeight,
+                  child: SizedBox(
+                    width: controllerSize.width,
+                    height: controllerSize.height,
+                    child: VideoPlayer(_videoController),
+                  ),
+                ),
               ),
             ),
           ),
