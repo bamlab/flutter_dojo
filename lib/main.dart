@@ -10,6 +10,7 @@ import 'package:bam_dojo/haptic/haptic.dart';
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:bam_dojo/sign_up/sign_up.dart';
 import 'package:bam_dojo/surf/surf.dart';
+import 'package:bam_dojo/twofingers/twofingers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -61,6 +62,7 @@ final _dojos = <DojoWidget>[
   DojoSignUp(),
   DojoCardHover(),
   HapticDojo(),
+  TwoFingerDojo()
 ];
 
 class DojoPicker extends StatelessWidget {
