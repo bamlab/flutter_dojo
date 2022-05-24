@@ -10,8 +10,8 @@ final _teams = <TeamWidget>[
   const TwoFingersTeam3()
 ];
 
-class HapticDojo extends DojoWidget {
-  HapticDojo({
+class TwoFingerDojo extends DojoWidget {
+  TwoFingerDojo({
     Key? key,
-  }) : super(key: key, dojoName: 'Haptic', teams: _teams);
+  }) : super(key: key, dojoName: 'Two Finger', teams: _teams);
 }
