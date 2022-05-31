@@ -10,6 +10,7 @@ import 'package:bam_dojo/haptic/haptic.dart';
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:bam_dojo/sign_up/sign_up.dart';
 import 'package:bam_dojo/surf/surf.dart';
+import 'package:bam_dojo/time_machine/time_machine.dart';
 import 'package:bam_dojo/twofingers/twofingers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -62,7 +63,8 @@ final _dojos = <DojoWidget>[
   DojoSignUp(),
   DojoCardHover(),
   HapticDojo(),
-  TwoFingerDojo()
+  TwoFingerDojo(),
+  DojoTimeMachine(),
 ];
 
 class DojoPicker extends StatelessWidget {
@@ -79,9 +81,10 @@ class DojoPicker extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: _dojos
+          children: _dojos.reversed
               .map(
-                (e) => ListTile(
+                (e) =>
+                ListTile(
                   title: Text(e.dojoName),
                   onTap: () {
                     Navigator.push(
@@ -92,7 +95,7 @@ class DojoPicker extends StatelessWidget {
                     );
                   },
                 ),
-              )
+          )
               .toList(),
         ),
       ),
