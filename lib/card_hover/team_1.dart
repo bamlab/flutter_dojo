@@ -1,6 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 
 class CardHoverTeam1 extends TeamWidget {
   const CardHoverTeam1({Key? key}) : super(teamName: 'The best', key: key);
@@ -38,8 +39,7 @@ class _CardHoverState extends State<_CardHover> {
             onHover: (event) {
               setState(() {
                 _mousePosition = event.position;
-                _mousePositionFromCenter =
-                    event.position - centerPosition;
+                _mousePositionFromCenter = event.position - centerPosition;
               });
             },
             cursor: SystemMouseCursors.none,
@@ -53,17 +53,19 @@ class _CardHoverState extends State<_CardHover> {
                         alignment: Alignment.center,
                         transform: Matrix4.identity()
                           ..setEntry(
-                              3,
-                              0,
-                              0.001 *
-                                  _mousePositionFromCenter.dx /
-                                  constraints.maxWidth)
+                            3,
+                            0,
+                            0.001 *
+                                _mousePositionFromCenter.dx /
+                                constraints.maxWidth,
+                          )
                           ..setEntry(
-                              3,
-                              1,
-                              0.01 *
-                                  _mousePositionFromCenter.dy /
-                                  constraints.maxHeight),
+                            3,
+                            1,
+                            0.01 *
+                                _mousePositionFromCenter.dy /
+                                constraints.maxHeight,
+                          ),
                         child: Card(
                           margin: EdgeInsets.zero,
                           elevation: 20,
