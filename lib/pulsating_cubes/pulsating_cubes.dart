@@ -27,12 +27,10 @@ class Cube extends StatelessWidget {
   const Cube({
     Key? key,
     required this.size,
-    required this.color,
   }) : super(key: key);
 
   final double size;
 
-  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -58,15 +56,6 @@ class Cube extends StatelessWidget {
           ),
         ),
         Transform(
-          transform: Matrix4.identity()
-            ..rotateX(pi / 2)
-            ..translate(0.0, -size / 2, -size),
-          child: _Face(
-            color: Colors.purple,
-            size: size,
-          ),
-        ),
-        Transform(
           transform: Matrix4.identity()..translate(0.0, 0.0, -size / 2),
           child: _Face(
             color: Colors.blue,
@@ -88,6 +77,15 @@ class Cube extends StatelessWidget {
             ..translate(-size / 2, 0.0, 0.0),
           child: _Face(
             color: Colors.orange,
+            size: size,
+          ),
+        ),
+        Transform(
+          transform: Matrix4.identity()
+            ..rotateX(pi / 2)
+            ..translate(0.0, -size / 2, -size),
+          child: _Face(
+            color: Colors.purple,
             size: size,
           ),
         ),
@@ -159,7 +157,6 @@ class _MyAppState extends State<MyApp> {
                 ..rotateY(yRotation),
               child: const Cube(
                 size: 100,
-                color: Colors.red,
               ),
             ),
           ),
@@ -167,4 +164,12 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+}
+
+/// Same as [Offset] but with ints.
+class IntOffset {
+  final int x;
+  final int y;
+
+  const IntOffset(this.x, this.y);
 }

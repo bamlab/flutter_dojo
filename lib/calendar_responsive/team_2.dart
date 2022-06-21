@@ -33,7 +33,7 @@ class _ResponsiveCalendarState extends State<_ResponsiveCalendar> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       isFirst = false;
     });
   }
