@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 
 import 'pulsating_cubes.dart';
 
-
-
 class PulsatingCubesTeam3 extends TeamWidget {
   const PulsatingCubesTeam3({
     Key? key,
@@ -36,6 +34,9 @@ class _CubesState extends State<_Cubes> with SingleTickerProviderStateMixin {
     duration: const Duration(milliseconds: 5000),
   );
 
+  final beginColor = Color.fromARGB(255, 54, 168, 244);
+  final endColor = Color.fromARGB(255, 245, 245, 17);
+
   @override
   initState() {
     super.initState();
@@ -50,7 +51,6 @@ class _CubesState extends State<_Cubes> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     // The radius of the virtual circle and square which contain all the cubes
@@ -60,7 +60,7 @@ class _CubesState extends State<_Cubes> with SingleTickerProviderStateMixin {
     // Number of cubes in the row and column
     //
     // Use an impair number, otherwise the virtual circle will not be centered.
-    final count = 3;
+    final count = 5;
 
     // The indexes of the cubes in the row and column
     //
@@ -72,11 +72,11 @@ class _CubesState extends State<_Cubes> with SingleTickerProviderStateMixin {
     // They are used to calculate the position of the cubes.
     final indexes = List.generate(
       count * count,
-          (index) => IntOffset(index % count, index ~/ count),
+      (index) => IntOffset(index % count, index ~/ count),
     );
 
-    // The width and height of the cubes
-    const rectSize = 50.0;
+    const minRectSize = 50.0;
+    const maxRectSize = 80.0;
 
     // Summary of the previous variables with count=9:
     //
@@ -101,21 +101,49 @@ class _CubesState extends State<_Cubes> with SingleTickerProviderStateMixin {
         constraints.maxWidth ~/ 2,
         constraints.maxHeight ~/ 2,
       );
-      final middleRectTop = screenMiddlePosition.y - rectSize / 2;
-      final middleRectLeft = screenMiddlePosition.x - rectSize / 2;
+      // We take [minRectSize] because the size of the middle rect never changes
+      final middleRectTop = screenMiddlePosition.y - minRectSize / 2;
+      final middleRectLeft = screenMiddlePosition.x - minRectSize / 2;
 
       return Stack(
-        children: indexes
-            .map(
-              (index) => _Cube(
-            position: Offset(
-              middleRectLeft + (index.x - count ~/ 2) * virtualRectRadius,
-              middleRectTop + (index.y - count ~/ 2) * virtualRectRadius,
-            ),
-            size: rectSize,
-          ),
-        )
-            .toList(),
+        alignment: Alignment.center,
+        children: indexes.map(
+          (index) {
+            // [-1, 1] fixed
+            final relativeIndexX = (index.x - count ~/ 2) / (count ~/ 2);
+            final relativeIndexY = (index.y - count ~/ 2) / (count ~/ 2);
+
+            // [0, 1] fixed
+            final distanceToMiddle = sqrt(
+              relativeIndexX * relativeIndexX + relativeIndexY * relativeIndexY,
+            );
+
+            // [0, 1] variable
+            final relativeDistanceToMiddle =
+                distanceToMiddle * _animationController.value;
+
+            // The width and height of the cubes
+            //
+            //
+            final _sizeTween = Tween<double>(
+              begin: minRectSize,
+              // when relativeDistanceToMiddle is 0, end is [minRectSize]
+              // when relativeDistanceToMiddle is 1, end is [maxRectSize]
+              end: minRectSize +
+                  (maxRectSize - minRectSize) * relativeDistanceToMiddle,
+            );
+
+            return _Cube(
+              position: Offset(
+                middleRectLeft + (index.x - count ~/ 2) * virtualRectRadius,
+                middleRectTop + (index.y - count ~/ 2) * virtualRectRadius,
+              ),
+              size: _sizeTween.evaluate(_animationController),
+              // A color from blue to yellow
+              color: relativeDistanceToMiddle > 0.5 ? endColor : beginColor,
+            );
+          },
+        ).toList(),
       );
     });
   }
@@ -126,10 +154,12 @@ class _Cube extends StatelessWidget {
     Key? key,
     required this.position,
     required this.size,
+    required this.color,
   }) : super(key: key);
 
   final Offset position;
   final double size;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -139,8 +169,7 @@ class _Cube extends StatelessWidget {
       child: Container(
         width: size,
         height: size,
-        // a random color
-        color: Colors.redAccent,
+        color: color,
       ),
     );
   }

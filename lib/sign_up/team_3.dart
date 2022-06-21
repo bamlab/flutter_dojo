@@ -60,7 +60,7 @@ class _Sheet extends StatefulWidget {
   State<_Sheet> createState() => _SheetState();
 }
 
-class _SheetState extends State<_Sheet> with SingleTickerProviderStateMixin {
+class _SheetState extends State<_Sheet> {
   final pageController = PageController();
 
   @override
