@@ -139,7 +139,6 @@ class _Cube extends StatelessWidget {
       child: Container(
         width: size,
         height: size,
-        // a random color
         color: Colors.redAccent,
       ),
     );
