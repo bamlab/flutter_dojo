@@ -16,6 +16,8 @@ import 'package:bam_dojo/twofingers/twofingers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'perspective/perspective.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -67,6 +69,7 @@ final _dojos = <DojoWidget>[
   TwoFingerDojo(),
   DojoTimeMachine(),
   DojoPulsatingCubes(),
+  DojoPerspective(),
 ];
 
 class DojoPicker extends StatelessWidget {
