@@ -39,12 +39,6 @@ class _FlowMenuState extends State<FlowMenu>
 
   double currentScrollOffset = 0;
 
-  void _updateMenu(IconData icon) {
-    if (icon != Icons.menu) {
-      setState(() => lastTapped = icon);
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -55,8 +49,6 @@ class _FlowMenuState extends State<FlowMenu>
   }
 
   Widget flowMenuItem(Color color) {
-    final double buttonDiameter =
-        MediaQuery.of(context).size.width / menuItems.length;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: GestureDetector(

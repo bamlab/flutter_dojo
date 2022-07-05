@@ -71,6 +71,7 @@ class _TwoFingerPointerWidgetState extends State<TwoFingerPointerWidget> {
                 _startDragOffset = details;
                 _dragOffset = details;
               });
+              return null;
             };
           },
         ),

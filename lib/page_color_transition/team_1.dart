@@ -1,6 +1,5 @@
 
 import 'package:bam_dojo/helpers/team_class.dart';
-import 'package:bam_dojo/page_color_transition/page_color_transition.dart';
 import 'package:flutter/material.dart';
 
 
