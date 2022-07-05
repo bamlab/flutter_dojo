@@ -8,6 +8,7 @@ import 'package:bam_dojo/calendar_responsive/calendar_responsive.dart';
 import 'package:bam_dojo/card_hover/card_hover.dart';
 import 'package:bam_dojo/haptic/haptic.dart';
 import 'package:bam_dojo/helpers/team_class.dart';
+import 'package:bam_dojo/page_color_transition/page_color_transition.dart';
 import 'package:bam_dojo/pulsating_cubes/pulsating_cubes.dart';
 import 'package:bam_dojo/sign_up/sign_up.dart';
 import 'package:bam_dojo/surf/surf.dart';
@@ -70,6 +71,7 @@ final _dojos = <DojoWidget>[
   DojoTimeMachine(),
   DojoPulsatingCubes(),
   DojoPerspective(),
+  DojoPageColorTransition(),
 ];
 
 class DojoPicker extends StatelessWidget {
