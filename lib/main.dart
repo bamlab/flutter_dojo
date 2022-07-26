@@ -7,6 +7,7 @@ import 'package:bam_dojo/calendar/calendar.dart';
 import 'package:bam_dojo/calendar_drag/calendar_drag.dart';
 import 'package:bam_dojo/calendar_responsive/calendar_responsive.dart';
 import 'package:bam_dojo/card_hover/card_hover.dart';
+import 'package:bam_dojo/card_shredder/card_shredder.dart';
 import 'package:bam_dojo/cloth/cloth.dart';
 import 'package:bam_dojo/haptic/haptic.dart';
 import 'package:bam_dojo/helpers/team_class.dart';
@@ -80,6 +81,7 @@ final _dojos = <DojoWidget>[
   DojoAnimatedLikes(),
   DojoCloth(),
   DojoPhysics(),
+  DojoCardShredder(),
 ];
 
 class DojoPicker extends StatelessWidget {
