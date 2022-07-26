@@ -11,6 +11,7 @@ import 'package:bam_dojo/cloth/cloth.dart';
 import 'package:bam_dojo/haptic/haptic.dart';
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:bam_dojo/page_color_transition/page_color_transition.dart';
+import 'package:bam_dojo/physics/physics.dart';
 import 'package:bam_dojo/pulsating_cubes/pulsating_cubes.dart';
 import 'package:bam_dojo/rolling_counter/rolling_counter.dart';
 import 'package:bam_dojo/sign_up/sign_up.dart';
@@ -78,6 +79,7 @@ final _dojos = <DojoWidget>[
   DojoRollingCounter(),
   DojoAnimatedLikes(),
   DojoCloth(),
+  DojoPhysics(),
 ];
 
 class DojoPicker extends StatelessWidget {
@@ -96,8 +98,7 @@ class DojoPicker extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: _dojos.reversed
               .map(
-                (e) =>
-                ListTile(
+                (e) => ListTile(
                   title: Text(e.dojoName),
                   onTap: () {
                     Navigator.push(
@@ -108,7 +109,7 @@ class DojoPicker extends StatelessWidget {
                     );
                   },
                 ),
-          )
+              )
               .toList(),
         ),
       ),
