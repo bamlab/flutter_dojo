@@ -86,6 +86,24 @@ class _RollingCounterState extends State<_RollingCounter> {
           },
           child: Text('Change value'),
         ),
+        Opacity(
+          opacity: 0,
+          child: TextButton(
+            onPressed: () {
+              setState(() {
+                _numberOfVisibleDigits = 3;
+                for (final controller in _controllers) {
+                  controller.animateToPage(
+                    6,
+                    duration: Duration(milliseconds: 500),
+                    curve: Curves.easeInOut,
+                  );
+                }
+              });
+            },
+            child: Text('Set to 666'),
+          ),
+        ),
       ],
     );
   }

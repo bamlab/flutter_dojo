@@ -17,6 +17,7 @@ import 'package:bam_dojo/pulsating_cubes/pulsating_cubes.dart';
 import 'package:bam_dojo/rolling_counter/rolling_counter.dart';
 import 'package:bam_dojo/sign_up/sign_up.dart';
 import 'package:bam_dojo/surf/surf.dart';
+import 'package:bam_dojo/swooping_card/swooping_card.dart';
 import 'package:bam_dojo/time_machine/time_machine.dart';
 import 'package:bam_dojo/twofingers/twofingers.dart';
 import 'package:flutter/material.dart';
@@ -82,6 +83,7 @@ final _dojos = <DojoWidget>[
   DojoCloth(),
   DojoPhysics(),
   DojoCardShredder(),
+  DojoSwoopingCard(),
 ];
 
 class DojoPicker extends StatelessWidget {

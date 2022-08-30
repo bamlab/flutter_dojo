@@ -82,7 +82,7 @@ class _Physics extends StatelessWidget {
       child: Column(
         children: [
           Expanded(
-            child: GravityFieldPlayground(
+            child: WindFieldPlayground(
               child: ForceFieldVisualizer(),
             ),
           ),
@@ -114,12 +114,12 @@ class _GravityFieldPlaygroundState extends State<GravityFieldPlayground> {
 
   final pointPosition = math.Vector2(200, 400);
   late var gravityPoints = IList([
-    math.Vector2(pointPosition.x, pointPosition.y - 1000),
-    math.Vector2(pointPosition.x, pointPosition.y + 1000),
+    math.Vector2(pointPosition.x, pointPosition.y - 100),
+    math.Vector2(pointPosition.x, pointPosition.y + 100),
   ]);
   late var gravityBallMasses = List.generate(
     gravityPoints.length,
-    (index) => maxMass,
+    (index) => 1e9,
   ).toIList();
 
   @override
@@ -685,7 +685,7 @@ class GravityField implements ForceFieldBase {
   math.Vector2 computeFor(Particle particle) {
     final d = particle.movement.position.distanceTo(origin);
     final d2 = d * d;
-    final force = gravity * particle.properties.mass * mass / d2;
+    final force = -gravity * particle.properties.mass * mass / d2;
 
     final unit = (particle.movement.position - origin).normalized();
 
