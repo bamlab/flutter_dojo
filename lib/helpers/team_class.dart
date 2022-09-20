@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
-abstract class TeamWidget extends StatelessWidget {
+mixin TeamMixin on Widget {
+  String get teamName;
+}
+
+abstract class TeamWidget extends StatelessWidget with TeamMixin {
   final String teamName;
 
   const TeamWidget({Key? key, required this.teamName}) : super(key: key);
@@ -8,7 +12,7 @@ abstract class TeamWidget extends StatelessWidget {
 
 abstract class DojoWidget extends StatelessWidget {
   final String dojoName;
-  final List<TeamWidget> teams;
+  final List<TeamMixin> teams;
 
   const DojoWidget({
     Key? key,
@@ -32,9 +36,7 @@ abstract class DojoWidget extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => e,
-                      ),
+                      MaterialPageRoute(builder: (context) => e),
                     );
                   },
                 ),
