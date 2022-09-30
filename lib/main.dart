@@ -26,6 +26,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'perspective/perspective.dart';
+import 'round_scrollbar/round_scrollbar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -88,6 +89,7 @@ final _dojos = <DojoWidget>[
   DojoSwoopingCard(),
   DojoHoleCards(),
   DojoDragThis(),
+  DojoRoundScrollbar(),
 ];
 
 class DojoPicker extends StatelessWidget {
