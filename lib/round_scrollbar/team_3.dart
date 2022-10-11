@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:flutter/material.dart';
 

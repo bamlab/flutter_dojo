@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:bam_dojo/helpers/team_class.dart';
@@ -6,7 +5,6 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:vector_math/vector_math_64.dart' as math;
-import 'package:collection/collection.dart';
 
 class Phoenix extends StatefulWidget {
   const Phoenix({Key? key, required this.child}) : super(key: key);

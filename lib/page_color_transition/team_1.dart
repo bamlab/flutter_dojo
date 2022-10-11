@@ -25,7 +25,6 @@ class _Swiper extends StatefulWidget {
 }
 
 class _SwiperState extends State<_Swiper> {
-  Offset _dragOffset = Offset.zero;
   final pageController = PageController(initialPage: 0);
 
   int pageIndex = 0;
