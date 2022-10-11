@@ -12,6 +12,7 @@ import 'package:bam_dojo/cloth/cloth.dart';
 import 'package:bam_dojo/drag_this/drag_this.dart';
 import 'package:bam_dojo/haptic/haptic.dart';
 import 'package:bam_dojo/helpers/team_class.dart';
+import 'package:bam_dojo/hero_list/hero_list.dart';
 import 'package:bam_dojo/hole_cards/hole_cards.dart';
 import 'package:bam_dojo/page_color_transition/page_color_transition.dart';
 import 'package:bam_dojo/physics/physics.dart';
@@ -92,6 +93,7 @@ final _dojos = <DojoWidget>[
   DojoDragThis(),
   DojoRoundScrollbar(),
   DojoScrollProgress(),
+  DojoHeroList(),
 ];
 
 class DojoPicker extends StatelessWidget {
