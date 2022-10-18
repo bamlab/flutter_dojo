@@ -22,10 +22,7 @@ class _RoundScrollbarTeam1State extends State<RoundScrollbarTeam1> {
       )
       .toList();
 
-  final controller = PageController(
-    viewportFraction: 0.45,
-    initialPage: 22,
-  );
+  final controller = PageController(viewportFraction: 0.45);
 
   double roundOffsetRatio = 0;
 
@@ -35,11 +32,9 @@ class _RoundScrollbarTeam1State extends State<RoundScrollbarTeam1> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.addListener(() {
         setState(() {
-          // roundOffsetRatio = controller.offset / (controller.position.maxScrollExtent + controller.position.viewportDimension  - 300);
-          // print('controller.position.maxScrollExtent: ${controller.position.maxScrollExtent}');
-          // print('controller.position.viewportDimension: ${controller.position.viewportDimension}');
-          // roundOffsetRatio = controller.offset / (controller.position.maxScrollExtent + controller.position.viewportDimension*(1-controller.viewportFraction));
-          roundOffsetRatio = controller.offset / (controller.position.maxScrollExtent + controller.position.viewportDimension);
+          roundOffsetRatio = controller.offset /
+              (controller.position.maxScrollExtent +
+                  controller.position.viewportDimension);
         });
       });
     });
@@ -62,7 +57,6 @@ class _RoundScrollbarTeam1State extends State<RoundScrollbarTeam1> {
                     context: context,
                     removeTop: true,
                     child: PageView.builder(
-
                       controller: controller,
                       scrollDirection: Axis.vertical,
                       clipBehavior: Clip.none,
@@ -113,46 +107,52 @@ class _ScrollbarLettersColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       final letterHeight = constraints.maxHeight / letters.length;
-      final roundWidgetSize = letterHeight;
-      final roundOffset =
-          roundOffsetRatio * (constraints.maxHeight - roundWidgetSize + letterHeight) +
-              roundWidgetSize / 2;
-      return ColoredBox(
-        color: Colors.redAccent,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(right: roundWidgetSize + 10),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: letters.mapIndexed(
-                  (index, letter) {
-                    final xOffset = gaussian(letterHeight * index +
-                            letterHeight / 2 -
-                            roundOffset) *
-                        roundWidgetSize;
-                    return Expanded(
-                      child: Transform.translate(
-                        offset: Offset(-xOffset, 0),
-                        child: ColoredBox(
-                          color: Colors.white,
-                          child: _ScrollbarLetterRow(letter: letter),
-                        ),
+      final roundWidgetSize = letterHeight * 0.8;
+      final roundOffset = roundOffsetRatio *
+              (constraints.maxHeight - roundWidgetSize + letterHeight * 1.2) +
+          roundWidgetSize / 2;
+      return Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(right: roundWidgetSize + 10),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: letters.mapIndexed(
+                (index, letter) {
+                  final xOffset = gaussian(letterHeight * index +
+                          letterHeight / 2 -
+                          roundOffset) *
+                      roundWidgetSize *
+                      0.8;
+                  final color = Color_.fromHSV(
+                    hue: 0,
+                    saturation: 0,
+                    value: 0.5 - xOffset / roundWidgetSize,
+                  );
+                  // weight is from 0 to 1
+                  final weight = xOffset / roundWidgetSize - 1;
+                  return Expanded(
+                    child: Transform.translate(
+                      offset: Offset(-xOffset, 0),
+                      child: _ScrollbarLetterRow(
+                        letter: letter,
+                        color: color,
+                        weight: weight,
                       ),
-                    );
-                  },
-                ).toList(),
-              ),
+                    ),
+                  );
+                },
+              ).toList(),
             ),
-            Positioned(
-              top: roundOffset - roundWidgetSize / 2,
-              right: 10,
-              child: _RoundWidget(size: roundWidgetSize),
-            ),
-          ],
-        ),
+          ),
+          Positioned(
+            top: roundOffset - roundWidgetSize / 2,
+            right: 10,
+            child: _RoundWidget(size: roundWidgetSize),
+          ),
+        ],
       );
     });
   }
@@ -168,24 +168,39 @@ class _RoundWidget extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(color: Colors.grey, shape: BoxShape.circle),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.8),
+        shape: BoxShape.circle,
+      ),
     );
   }
 }
 
 class _ScrollbarLetterRow extends StatelessWidget {
-  const _ScrollbarLetterRow({Key? key, required this.letter}) : super(key: key);
+  const _ScrollbarLetterRow({
+    Key? key,
+    required this.letter,
+    required this.color,
+    required this.weight,
+  }) : super(key: key);
 
   final String letter;
+  final Color color;
+  final double weight;
 
   @override
   Widget build(BuildContext context) {
+    final fontWeight = FontWeight.lerp(
+      FontWeight.normal,
+      FontWeight.w900,
+      1 + weight,
+    )!;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(letter),
+        Text(letter, style: TextStyle(color: color, fontWeight: fontWeight)),
         SizedBox(width: 5),
-        Container(height: 1, width: 10, color: Colors.black),
+        Container(height: weight + 2, width: 10, color: color),
         SizedBox(width: 5),
       ],
     );
@@ -210,7 +225,6 @@ class _LetterColumn extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // letter
           SizedBox.square(
             dimension: 50,
             child: Center(
@@ -322,6 +336,7 @@ extension Color_ on Color {
         r = value;
         g = p;
         b = q;
+        break;
     }
 
     return Color.fromARGB(
