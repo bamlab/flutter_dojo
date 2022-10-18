@@ -19,6 +19,7 @@ import 'package:bam_dojo/physics/physics.dart';
 import 'package:bam_dojo/pulsating_cubes/pulsating_cubes.dart';
 import 'package:bam_dojo/rolling_counter/rolling_counter.dart';
 import 'package:bam_dojo/scroll_progress/scroll_progress.dart';
+import 'package:bam_dojo/shaking_field/shaking_field.dart';
 import 'package:bam_dojo/sign_up/sign_up.dart';
 import 'package:bam_dojo/surf/surf.dart';
 import 'package:bam_dojo/swooping_card/swooping_card.dart';
@@ -94,6 +95,7 @@ final _dojos = <DojoWidget>[
   DojoRoundScrollbar(),
   DojoScrollProgress(),
   DojoHeroList(),
+  DojoShakingField(),
 ];
 
 class DojoPicker extends StatelessWidget {
