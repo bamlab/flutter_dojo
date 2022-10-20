@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:bam_dojo/helpers/team_class.dart';
@@ -291,13 +292,17 @@ class BlurredWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // This is a fix for Flutter Web where setting the blur to 0 throws an
+    // exception
+    final safeBlur = max(1e-3, this.blur);
+
     return ClipRect(
       child: Stack(
         children: <Widget>[
           child,
           Positioned.fill(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+              filter: ImageFilter.blur(sigmaX: safeBlur, sigmaY: safeBlur),
               child: Container(color: Colors.transparent),
             ),
           )
