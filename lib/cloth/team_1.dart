@@ -17,39 +17,27 @@ class ClothTeam1 extends TeamWidget {
   }
 }
 
-class _Cloth extends StatefulWidget {
+class _Cloth extends StatelessWidget {
   const _Cloth({Key? key}) : super(key: key);
+  final xCount = 20;
+  final yCount = 15;
 
-  @override
-  State<_Cloth> createState() => _ClothState();
-}
+  double angleFromPos(num x, num y) {
+    if (x == 0 && y == 0) {
+      return 0.0;
+    }
 
-class _ClothState extends State<_Cloth> {
-  Offset? _touchPosition;
+    return (atan2(y, x) + pi) / (2 * pi) * 360;
+  }
+
+  HSLColor getColorFromPosition(int x, int y) {
+    return HSLColor.fromAHSL(1, angleFromPos(x, y), 1, 0.7);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final xCount = 20;
-    final yCount = 15;
-
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onPanStart: (details) {
-        setState(() {
-          _touchPosition = details.globalPosition;
-        });
-      },
-      onPanUpdate: (details) {
-        setState(() {
-          _touchPosition = details.globalPosition;
-        });
-      },
-      onPanEnd: (details) {
-        setState(() {
-          _touchPosition = null;
-        });
-      },
-      child: Padding(
+    return TouchPositionBuilder(builder: (context, touchPosition) {
+      return Padding(
         padding: const EdgeInsets.all(20.0),
         child: Center(
           child: GridView.count(
@@ -65,32 +53,14 @@ class _ClothState extends State<_Cloth> {
                   final y = i ~/ xCount - yCount ~/ 2;
                   return _AttractedCube(
                     color: getColorFromPosition(x, y),
-                    attractorPosition: _touchPosition,
+                    attractorPosition: touchPosition,
                   );
                 }()
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  double angleFromPos(num x, num y) {
-    if (x == 0 && y == 0) {
-      return 0.0;
-    }
-
-    return (atan2(y, x) + pi) / (2 * pi) * 360;
-  }
-
-  HSLColor getColorFromPosition(int x, int y) {
-    final color = HSLColor.fromAHSL(
-      1,
-      angleFromPos(x, y),
-      1,
-      0.7,
-    );
-    return color;
+      );
+    });
   }
 }
 
@@ -110,6 +80,32 @@ class _AttractedCube extends StatefulWidget {
 
 class _AttractedCubeState extends State<_AttractedCube> {
   final _positionKey = GlobalKey();
+  final minScale = 0.5;
+  late double scale;
+  late Offset offset;
+
+  @override
+  void initState() {
+    super.initState();
+    _setScaleAndOffset();
+  }
+
+  @override
+  void didUpdateWidget(covariant _AttractedCube oldWidget) {
+    super.didUpdateWidget(oldWidget);
+      _setScaleAndOffset();
+  }
+
+  double offsetDist(Offset offset1, Offset offset2) {
+    final xDiff = offset1.dx - offset2.dx;
+    final yDiff = offset1.dy - offset2.dy;
+    return sqrt(xDiff * xDiff + yDiff * yDiff);
+  }
+
+  void _setScaleAndOffset() {
+    scale = minScale + (1 - pullingForce) * (1 - minScale);
+    offset = pullingForce == 0 ? Offset.zero : offsetDiff! * pullingForce;
+  }
 
   Offset? get globalPosition =>
       (_positionKey.currentContext?.findRenderObject() as RenderBox?)
@@ -135,12 +131,6 @@ class _AttractedCubeState extends State<_AttractedCube> {
     return sqrt(offsetDiff.dx * offsetDiff.dx + offsetDiff.dy * offsetDiff.dy);
   }
 
-  // A pulling force is applied to the cube to make it move towards the attractor.
-  //
-  // The pulling force is proportional to the square of the distance between the
-  // cube and the attractor and is always between 0 and 1.
-  //
-  // 1 means strong, 0 means no attraction.
   double get pullingForce {
     final distanceToAttractor = this.distanceToAttractor;
     if (distanceToAttractor == null) {
@@ -151,23 +141,17 @@ class _AttractedCubeState extends State<_AttractedCube> {
 
     final relativeDistance = distanceToAttractor / maxDistance;
 
-    return 1 / (pow(relativeDistance, 3) + 1);
+    return pow(1 / (pow(relativeDistance, 3) + 1), 2) * 1.0;
   }
 
   @override
   Widget build(BuildContext context) {
-    final minScale = 0.5;
     return KeyedSubtree(
       key: _positionKey,
       child: Transform.scale(
-        scale: minScale + (1 - pullingForce) * (1 - minScale),
+        scale: scale,
         child: Transform.translate(
-          offset: pullingForce == 0
-              ? Offset.zero
-              : Offset(
-                  offsetDiff!.dx * pow(pullingForce, 2),
-                  offsetDiff!.dy * pow(pullingForce, 2),
-                ),
+          offset: offset,
           child: DecoratedBox(
             decoration: BoxDecoration(
               color: widget.color.toColor(),
@@ -176,6 +160,37 @@ class _AttractedCubeState extends State<_AttractedCube> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class TouchPositionBuilder extends StatefulWidget {
+  const TouchPositionBuilder({
+    Key? key,
+    required this.builder,
+  }) : super(key: key);
+
+  final Widget Function(BuildContext context, Offset? touchPosition) builder;
+
+  @override
+  State<TouchPositionBuilder> createState() => _TouchPositionBuilderState();
+}
+
+class _TouchPositionBuilderState extends State<TouchPositionBuilder> {
+  Offset? _touchPosition;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onPanStart: (details) {
+        setState(() => _touchPosition = details.globalPosition);
+      },
+      onPanUpdate: (details) {
+        setState(() => _touchPosition = details.globalPosition);
+      },
+      onPanEnd: (details) => setState(() => _touchPosition = null),
+      child: widget.builder(context, _touchPosition),
     );
   }
 }
