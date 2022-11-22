@@ -1,5 +1,4 @@
 import 'package:bam_dojo/helpers/team_class.dart';
-import 'package:equatable/equatable.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 
@@ -79,46 +78,74 @@ class VisibleTagsProvider extends StatefulWidget {
 }
 
 class _VisibleTagsProviderState extends State<VisibleTagsProvider>
-    with SingleTickerProviderStateMixin {
-  late final animationController = AnimationController(
-    vsync: this,
-    duration: Duration(milliseconds: 500),
-  );
+    with TickerProviderStateMixin {
+  var tagsAnimationProperties = IList<TagAnimationProperties>();
 
-  @override
-  void initState() {
-    super.initState();
-    animationController.addListener(() => setState(() {}));
-  }
+  /// Maps the tag name to every visible tags.
+  ///
+  /// There should never be more than 2 elements per list, since we wouldn't know
+  /// how to interpolate if there were more.
+  var visibleTags = IMap<String, IList<Tag>>();
 
-  var tweens = IList<Tween<Offset>>();
+  void add(Tag tag, {required void Function() onAnimationEnd}) async {
+    final previousSimilarTags = visibleTags[tag.key] ?? IList<Tag>();
 
-  var visibleTags = IList<Tag>();
+    // Update the visible tags.
+    assert(previousSimilarTags.length < 2, 'Too many tags');
+    visibleTags = visibleTags.update(
+      tag.key,
+      (tags) => tags.add(tag),
+      ifAbsent: () => IList([tag]),
+    );
 
-  void addTagIfNotPresent(Tag tag) {
-    print('addTagIfNotPresent $tag');
-    if (!visibleTags.contains(tag)) {
-      setState(() {
-        visibleTags = visibleTags.add(tag);
-      });
-    } else {
-      final initialTag = visibleTags.firstWhere((element) => element == tag);
-      tweens = tweens
-          .add(Tween<Offset>(begin: initialTag.position, end: tag.position));
-      animationController.forward(from: 0);
+    // If there was a previous tag, interpolate between the two.
+    final previousSimilarTag = previousSimilarTags.firstOrNull;
+    if (previousSimilarTag != null) {
+      final animationController = AnimationController(
+        vsync: this,
+        duration: Duration(milliseconds: 500),
+      );
+      final positionAnimation = Tween<Offset>(
+        begin: previousSimilarTag.position,
+        end: tag.position,
+      ).animate(animationController);
+      final sizeAnimation = Tween<Size>(
+        begin: previousSimilarTag.size,
+        end: tag.size,
+      ).animate(animationController);
+      final tagAnimationProperties = TagAnimationProperties(
+        position: positionAnimation,
+        size: sizeAnimation,
+        widget: tag.widget,
+      );
+      setState(
+        () => tagsAnimationProperties = tagsAnimationProperties.add(
+          tagAnimationProperties,
+        ),
+      );
+
+      animationController.addListener(() => setState(() {}));
+      await animationController.forward();
+
+      animationController.dispose();
+      setState(
+        () => tagsAnimationProperties = tagsAnimationProperties.remove(
+          tagAnimationProperties,
+        ),
+      );
     }
+
+    onAnimationEnd();
   }
 
-  void removeTag(String key) {
+  void removeTag(Tag tag) {
     setState(() {
-      visibleTags = visibleTags.removeWhere((tag) => tag.key == key);
+      visibleTags = visibleTags.update(
+        tag.key,
+        (tags) => tags.remove(tag),
+        ifAbsent: () => IList(),
+      );
     });
-  }
-
-  @override
-  void dispose() {
-    animationController.dispose();
-    super.dispose();
   }
 
   @override
@@ -128,25 +155,39 @@ class _VisibleTagsProviderState extends State<VisibleTagsProvider>
         Positioned.fill(
           child: VisibleTags(
             visibleTags: visibleTags,
-            addTagIfNotPresent: addTagIfNotPresent,
+            add: add,
             removeTag: removeTag,
             child: widget.child,
           ),
         ),
-        for (final tween in tweens)
-          Positioned(
-            top: tween.evaluate(animationController).dy,
-            left: tween.evaluate(animationController).dx,
-            child: ColoredBox(
-              color: Colors.redAccent,
-              child: SizedBox.square(
-                dimension: 50,
+        for (final tagAnimationProperties in tagsAnimationProperties)
+          () {
+            return Positioned(
+              top: tagAnimationProperties.position.value.dy,
+              left: tagAnimationProperties.position.value.dx,
+              width: tagAnimationProperties.size.value.width,
+              height: tagAnimationProperties.size.value.height,
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child: tagAnimationProperties.widget,
               ),
-            ),
-          ),
+            );
+          }()
       ],
     );
   }
+}
+
+class TagAnimationProperties {
+  TagAnimationProperties({
+    required this.position,
+    required this.size,
+    required this.widget,
+  });
+
+  final Animation<Offset> position;
+  final Animation<Size> size;
+  final Widget widget;
 }
 
 class VisibleTags extends InheritedWidget {
@@ -154,31 +195,28 @@ class VisibleTags extends InheritedWidget {
     Key? key,
     required Widget child,
     required this.visibleTags,
-    required this.addTagIfNotPresent,
+    required this.add,
     required this.removeTag,
   }) : super(key: key, child: child);
 
-  final IList<Tag> visibleTags;
-  final void Function(Tag tag) addTagIfNotPresent;
-  final void Function(String key) removeTag;
+  final IMap<String, IList<Tag>> visibleTags;
+  final void Function(Tag tag, {required void Function() onAnimationEnd}) add;
+  final void Function(Tag tag) removeTag;
 
   static VisibleTags of(BuildContext context) {
-    final VisibleTags? result =
-        context.dependOnInheritedWidgetOfExactType<VisibleTags>();
+    final result = context.dependOnInheritedWidgetOfExactType<VisibleTags>();
     assert(result != null, 'No VisibleTags found in context');
     return result!;
   }
 
   @override
-  bool updateShouldNotify(VisibleTags old) {
-    return true;
-  }
+  bool updateShouldNotify(VisibleTags old) => true;
 }
 
 class SmallLetters extends StatelessWidget {
   SmallLetters({Key? key, required this.onLetterSelected}) : super(key: key);
 
-  final void Function(String) onLetterSelected;
+  final void Function(String letter) onLetterSelected;
 
   final alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
@@ -232,30 +270,34 @@ class NoHero extends StatefulWidget {
 }
 
 class _NoHeroState extends State<NoHero> {
-  late final bool visible;
+  bool visible = false;
   var isInitialized = false;
+
   late final VisibleTags visibleTags;
+
+  late final Tag tag;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!isInitialized) {
       visibleTags = VisibleTags.of(context);
-      visible = visibleTags.visibleTags.fold<bool>(
-        true,
-        (previous, tag) => previous || tag.key == widget.tag,
-      );
+
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final renderObject = (context as Element).renderObject as RenderBox;
         final size = renderObject.size;
         final position = renderObject.localToGlobal(Offset.zero);
 
-        visibleTags.addTagIfNotPresent(
-          Tag(
-            key: widget.tag,
-            size: size,
-            position: position,
-          ),
+        tag = Tag(
+          key: widget.tag,
+          size: size,
+          position: position,
+          widget: widget.child,
+        );
+
+        visibleTags.add(
+          tag,
+          onAnimationEnd: () => setState(() => visible = true),
         );
       });
       isInitialized = true;
@@ -265,7 +307,7 @@ class _NoHeroState extends State<NoHero> {
   @override
   void dispose() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      visibleTags.removeTag(widget.tag);
+      visibleTags.removeTag(tag);
     });
 
     super.dispose();
@@ -280,13 +322,16 @@ class _NoHeroState extends State<NoHero> {
   }
 }
 
-class Tag extends Equatable {
+class Tag {
   final String key;
   final Size size;
   final Offset position;
+  final Widget widget;
 
-  Tag({required this.key, required this.size, required this.position});
-
-  @override
-  List<Object?> get props => [key];
+  Tag({
+    required this.key,
+    required this.size,
+    required this.position,
+    required this.widget,
+  });
 }
