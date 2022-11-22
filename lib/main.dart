@@ -3,6 +3,7 @@ import 'package:bam_dojo/airtags_animation/airtags.dart';
 import 'package:bam_dojo/animated_likes/animated_likes.dart';
 import 'package:bam_dojo/bank/bank.dart';
 import 'package:bam_dojo/bank_animation/bank_animation.dart';
+import 'package:bam_dojo/bouncing_bnb/bouncing_bnb.dart';
 import 'package:bam_dojo/calendar/calendar.dart';
 import 'package:bam_dojo/calendar_drag/calendar_drag.dart';
 import 'package:bam_dojo/calendar_responsive/calendar_responsive.dart';
@@ -98,6 +99,7 @@ final _dojos = <DojoWidget>[
   DojoHeroList(),
   DojoShakingField(),
   DojoHeroNoHero(),
+  DojoBouncingBNB(),
 ];
 
 class DojoPicker extends StatelessWidget {
