@@ -16,6 +16,7 @@ import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:bam_dojo/hero_list/hero_list.dart';
 import 'package:bam_dojo/hero_no_hero/hero_no_hero.dart';
 import 'package:bam_dojo/hole_cards/hole_cards.dart';
+import 'package:bam_dojo/out_of_screen/out_of_screen.dart';
 import 'package:bam_dojo/page_color_transition/page_color_transition.dart';
 import 'package:bam_dojo/physics/physics.dart';
 import 'package:bam_dojo/pulsating_cubes/pulsating_cubes.dart';
@@ -100,6 +101,7 @@ final _dojos = <DojoWidget>[
   DojoShakingField(),
   DojoHeroNoHero(),
   DojoBouncingBNB(),
+  DojoOutOfScreen(),
 ];
 
 class DojoPicker extends StatelessWidget {
