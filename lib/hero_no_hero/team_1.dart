@@ -106,12 +106,12 @@ class _VisibleTagsProviderState extends State<VisibleTagsProvider>
         duration: Duration(milliseconds: 500),
       );
       final positionAnimation = Tween<Offset>(
-        begin: previousSimilarTag.position,
-        end: tag.position,
+        begin: previousSimilarTag.getPosition(),
+        end: tag.getPosition(),
       ).animate(animationController);
       final sizeAnimation = Tween<Size>(
-        begin: previousSimilarTag.size,
-        end: tag.size,
+        begin: previousSimilarTag.getSize(),
+        end: tag.getSize(),
       ).animate(animationController);
       final tagAnimationProperties = TagAnimationProperties(
         position: positionAnimation,
@@ -253,12 +253,16 @@ class SmallLetters extends StatelessWidget {
   }
 }
 
-// 1. Get the widget size and position
+// How to get a widget size and position
 //
+// 1. The size and position is stored in the associated RenderObject.
 //      Widget      <-      Element        ->      RenderObject
 //    ColoredBox    <-  ColoredBoxElement  ->  RenderColoredBox
 //
-// 2.
+// 2. The `context` represents the Element
+//
+// Therefore we can use `context.findRenderObject()` to get the RenderObject and
+// then get the size and position.
 class NoHero extends StatefulWidget {
   const NoHero({super.key, required this.child, required this.tag});
 
@@ -284,14 +288,21 @@ class _NoHeroState extends State<NoHero> {
       visibleTags = VisibleTags.of(context);
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        final renderObject = (context as Element).renderObject as RenderBox;
-        final size = renderObject.size;
-        final position = renderObject.localToGlobal(Offset.zero);
-
         tag = Tag(
           key: widget.tag,
-          size: size,
-          position: position,
+          getSize: () {
+            if (!mounted) {
+              return Size.zero;
+            }
+            return (context.findRenderObject() as RenderBox).size;
+          },
+          getPosition: () {
+            if (!mounted) {
+              return Offset.zero;
+            }
+            return (context.findRenderObject() as RenderBox)
+                .localToGlobal(Offset.zero);
+          },
           widget: widget.child,
         );
 
@@ -324,14 +335,14 @@ class _NoHeroState extends State<NoHero> {
 
 class Tag {
   final String key;
-  final Size size;
-  final Offset position;
+  final Size Function() getSize;
+  final Offset Function() getPosition;
   final Widget widget;
 
   Tag({
     required this.key,
-    required this.size,
-    required this.position,
+    required this.getSize,
+    required this.getPosition,
     required this.widget,
   });
 }
