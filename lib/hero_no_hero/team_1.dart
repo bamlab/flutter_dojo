@@ -15,7 +15,7 @@ class HeroNoHeroTeam1 extends StatefulWidget with TeamMixin {
 }
 
 class _HeroNoHeroTeam1State extends State<HeroNoHeroTeam1> {
-  Widget? selectedAvatar;
+  String? avatarUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -25,15 +25,13 @@ class _HeroNoHeroTeam1State extends State<HeroNoHeroTeam1> {
         child: SafeArea(
           child: Row(
             children: [
-              Expanded(child: BigLetter(selectedAvatar: selectedAvatar)),
               Expanded(
-                child: SmallLetters(
-                  avatars: List.generate(
-                      40,
-                      (index) => Image.network(
-                          'https://avatars.dicebear.com/api/adventurer/$index.png')),
-                  onLetterSelected: (avatar) {
-                    setState(() => selectedAvatar = avatar);
+                child: SelectedAvatar(avatarUrl: avatarUrl),
+              ),
+              Expanded(
+                child: Avatars(
+                  onAvatarSelected: (avatarUrl) {
+                    setState(() => this.avatarUrl = avatarUrl);
                   },
                 ),
               ),
@@ -45,23 +43,27 @@ class _HeroNoHeroTeam1State extends State<HeroNoHeroTeam1> {
   }
 }
 
-class BigLetter extends StatelessWidget {
-  const BigLetter({Key? key, required this.selectedAvatar}) : super(key: key);
+class SelectedAvatar extends StatelessWidget {
+  const SelectedAvatar({Key? key, required this.avatarUrl}) : super(key: key);
 
-  final Widget? selectedAvatar;
+  final String? avatarUrl;
 
   @override
   Widget build(BuildContext context) {
+    final avatarUrl = this.avatarUrl;
+
     return Column(
       children: [
-        Text('Letter', style: Theme.of(context).textTheme.headline3),
+        Text('Selected', style: TextStyle(fontSize: 40)),
         Expanded(
           child: Center(
-            child: NoHero(
-              key: ValueKey(selectedAvatar),
-              tag: '${selectedAvatar.hashCode}',
-              child: selectedAvatar ?? SizedBox.shrink(),
-            ),
+            child: avatarUrl == null
+                ? SizedBox.shrink()
+                : NoHero(
+                    key: ValueKey(avatarUrl),
+                    tag: avatarUrl,
+                    child: Image.network(avatarUrl),
+                  ),
           ),
         ),
       ],
@@ -214,37 +216,37 @@ class VisibleTags extends InheritedWidget {
   bool updateShouldNotify(VisibleTags old) => true;
 }
 
-class SmallLetters extends StatelessWidget {
-  SmallLetters(
-      {Key? key, required this.onLetterSelected, required this.avatars})
-      : super(key: key);
+class Avatars extends StatelessWidget {
+  Avatars({
+    Key? key,
+    required this.onAvatarSelected,
+  }) : super(key: key);
 
-  final void Function(Widget letter) onLetterSelected;
-  final List<Widget> avatars;
+  final void Function(String avatarUrl) onAvatarSelected;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text('Avatars', style: Theme.of(context).textTheme.headline3),
+        Text('Avatars', style: TextStyle(fontSize: 40)),
         Expanded(
-          child: GridView.count(
-            crossAxisCount: 2,
-            children: [
-              for (final avatar in avatars)
-                GestureDetector(
-                  onTap: () => onLetterSelected(avatar),
-                  child: Container(
-                    color: Colors.blue,
-                    child: Center(
-                      child: NoHero(
-                        tag: '${avatar.hashCode}',
-                        child: avatar,
-                      ),
-                    ),
+          child: GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+            ),
+            itemBuilder: (context, index) {
+              final avatarUrl =
+                  'https://avatars.dicebear.com/api/adventurer/$index.png';
+              return GestureDetector(
+                onTap: () => onAvatarSelected(avatarUrl),
+                child: Center(
+                  child: NoHero(
+                    tag: avatarUrl,
+                    child: Image.network(avatarUrl),
                   ),
                 ),
-            ],
+              );
+            },
           ),
         ),
       ],
@@ -273,7 +275,7 @@ class NoHero extends StatefulWidget {
 }
 
 class _NoHeroState extends State<NoHero> {
-  bool visible = false;
+  var visible = false;
   var isInitialized = false;
 
   late final VisibleTags visibleTags;
@@ -307,7 +309,11 @@ class _NoHeroState extends State<NoHero> {
 
         visibleTags.add(
           tag,
-          onAnimationEnd: () => setState(() => visible = true),
+          onAnimationEnd: () {
+            if (mounted) {
+              setState(() => visible = true);
+            }
+          },
         );
       });
       isInitialized = true;
