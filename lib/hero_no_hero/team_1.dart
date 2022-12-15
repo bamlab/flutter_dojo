@@ -15,7 +15,7 @@ class HeroNoHeroTeam1 extends StatefulWidget with TeamMixin {
 }
 
 class _HeroNoHeroTeam1State extends State<HeroNoHeroTeam1> {
-  String? selectedLetter;
+  Widget? selectedAvatar;
 
   @override
   Widget build(BuildContext context) {
@@ -25,11 +25,15 @@ class _HeroNoHeroTeam1State extends State<HeroNoHeroTeam1> {
         child: SafeArea(
           child: Row(
             children: [
-              Expanded(child: BigLetter(selectedLetter: selectedLetter)),
+              Expanded(child: BigLetter(selectedAvatar: selectedAvatar)),
               Expanded(
                 child: SmallLetters(
-                  onLetterSelected: (letter) {
-                    setState(() => selectedLetter = letter);
+                  avatars: List.generate(
+                      40,
+                      (index) => Image.network(
+                          'https://avatars.dicebear.com/api/adventurer/$index.png')),
+                  onLetterSelected: (avatar) {
+                    setState(() => selectedAvatar = avatar);
                   },
                 ),
               ),
@@ -42,9 +46,9 @@ class _HeroNoHeroTeam1State extends State<HeroNoHeroTeam1> {
 }
 
 class BigLetter extends StatelessWidget {
-  const BigLetter({Key? key, required this.selectedLetter}) : super(key: key);
+  const BigLetter({Key? key, required this.selectedAvatar}) : super(key: key);
 
-  final String? selectedLetter;
+  final Widget? selectedAvatar;
 
   @override
   Widget build(BuildContext context) {
@@ -54,12 +58,9 @@ class BigLetter extends StatelessWidget {
         Expanded(
           child: Center(
             child: NoHero(
-              key: ValueKey(selectedLetter),
-              tag: selectedLetter ?? 'None',
-              child: Text(
-                selectedLetter ?? 'None',
-                style: Theme.of(context).textTheme.headline1,
-              ),
+              key: ValueKey(selectedAvatar),
+              tag: '${selectedAvatar.hashCode}',
+              child: selectedAvatar ?? SizedBox.shrink(),
             ),
           ),
         ),
@@ -214,33 +215,31 @@ class VisibleTags extends InheritedWidget {
 }
 
 class SmallLetters extends StatelessWidget {
-  SmallLetters({Key? key, required this.onLetterSelected}) : super(key: key);
+  SmallLetters(
+      {Key? key, required this.onLetterSelected, required this.avatars})
+      : super(key: key);
 
-  final void Function(String letter) onLetterSelected;
-
-  final alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  final void Function(Widget letter) onLetterSelected;
+  final List<Widget> avatars;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text('Letters', style: Theme.of(context).textTheme.headline3),
+        Text('Avatars', style: Theme.of(context).textTheme.headline3),
         Expanded(
           child: GridView.count(
             crossAxisCount: 2,
             children: [
-              for (final letter in alphabet)
+              for (final avatar in avatars)
                 GestureDetector(
-                  onTap: () => onLetterSelected(letter),
+                  onTap: () => onLetterSelected(avatar),
                   child: Container(
                     color: Colors.blue,
                     child: Center(
                       child: NoHero(
-                        tag: letter,
-                        child: Text(
-                          letter,
-                          style: Theme.of(context).textTheme.headline4,
-                        ),
+                        tag: '${avatar.hashCode}',
+                        child: avatar,
                       ),
                     ),
                   ),
