@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class ScrollProgressTeam3 extends StatefulWidget with TeamMixin {
   final teamName = 'Team3';
@@ -22,10 +23,6 @@ class _ScrollProgressTeam3State extends State<ScrollProgressTeam3> {
   var currentOffsetPercentage = 0.0;
   var previousOffset = 0.0;
 
-  Animation<double>? get scrollBarOpacityAnimation {
-    return scrollBarKey.currentState?.scrollbarPainter.fadeoutOpacityAnimation;
-  }
-
   @override
   initState() {
     super.initState();
@@ -41,16 +38,6 @@ class _ScrollProgressTeam3State extends State<ScrollProgressTeam3> {
         previousOffset = controller.offset;
       });
     });
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      scrollBarOpacityAnimation!.addListener(() => setState(() {}));
-    });
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
   }
 
   @override
@@ -59,17 +46,12 @@ class _ScrollProgressTeam3State extends State<ScrollProgressTeam3> {
       color: Colors.black,
       child: SafeArea(
         child: BlurredWidget(
-          blur: currentIndex >= maxImageCount + 1 ? 30 : 0,
+          blur: 0,
           child: Stack(
             children: [
-              RawScrollbar(
+              CustomScrollbar(
                 key: scrollBarKey,
-                thickness: 3,
-                radius: Radius.circular(10),
-                thumbColor: Colors.white,
-                controller: controller,
                 child: ListView.builder(
-                  controller: controller,
                   itemCount: 30,
                   itemBuilder: (context, index) {
                     return _RandomImage(index: index, height: imageHeight);
@@ -85,7 +67,7 @@ class _ScrollProgressTeam3State extends State<ScrollProgressTeam3> {
                     child: Padding(
                       padding: const EdgeInsets.only(right: 16.0),
                       child: Opacity(
-                        opacity: scrollBarOpacityAnimation?.value ?? 0,
+                        opacity: 1,
                         child: _ScrollBarPopup(
                           index: maxImageCount - currentIndex,
                           progress: currentIndex / maxImageCount,
@@ -196,7 +178,7 @@ class BlurredWidget extends StatelessWidget {
 
     return ClipRect(
       child: Stack(
-        children: <Widget>[
+        children: [
           child,
           Positioned.fill(
             child: IgnorePointer(
@@ -212,3 +194,98 @@ class BlurredWidget extends StatelessWidget {
   }
 }
 
+class CustomScrollbar extends StatefulWidget {
+  const CustomScrollbar({
+    Key? key,
+    required this.child,
+    this.height = 100,
+    this.thickness = 3,
+    this.radius = const Radius.circular(10),
+    this.thumbColor = Colors.white,
+  }) : super(key: key);
+
+  final Widget child;
+
+  final double thickness;
+  final double height;
+  final Radius radius;
+  final Color thumbColor;
+
+  @override
+  State<CustomScrollbar> createState() => _CustomScrollbarState();
+}
+
+class _CustomScrollbarState extends State<CustomScrollbar>
+    with SingleTickerProviderStateMixin {
+  late final opacityAnimationController = AnimationController(
+    vsync: this,
+    duration: Duration(milliseconds: 200),
+  );
+  late final opacityAnimation = opacityAnimationController.drive(
+    Tween<double>(begin: 0, end: 1).chain(
+      CurveTween(curve: Curves.easeInOut),
+    ),
+  );
+
+  double topOffset = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    opacityAnimationController.addListener(() => setState(() {}));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return NotificationListener<ScrollMetricsNotification>(
+      onNotification: _handleScrollMetricsNotification,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: _handleScrollNotification,
+        child: Stack(
+          children: [
+            widget.child,
+            Positioned(
+              right: 0,
+              top: topOffset,
+              child: Opacity(
+                opacity: opacityAnimation.value,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: widget.thumbColor,
+                    borderRadius: BorderRadius.all(widget.radius),
+                  ),
+                  width: widget.thickness,
+                  height: widget.height,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  bool _handleScrollMetricsNotification(
+    ScrollMetricsNotification notification,
+  ) {
+    if (notification.metrics.axis == Axis.vertical) {
+      setState(() {
+        topOffset = notification.metrics.pixels /
+            notification.metrics.maxScrollExtent *
+            (notification.metrics.viewportDimension - widget.height);
+      });
+    }
+
+    return false;
+  }
+
+  bool _handleScrollNotification(ScrollNotification notification) {
+    if (notification is ScrollStartNotification) {
+      opacityAnimationController.forward();
+    } else if (notification is ScrollEndNotification) {
+      opacityAnimationController.reverse();
+    }
+
+    return false;
+  }
+}
