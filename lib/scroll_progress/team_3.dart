@@ -1,3 +1,6 @@
+import 'dart:math';
+import 'dart:ui';
+
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:flutter/material.dart';
 
@@ -12,10 +15,16 @@ class _ScrollProgressTeam3State extends State<ScrollProgressTeam3> {
   final controller = ScrollController();
   final imageHeight = 300.0;
   final maxImageCount = 10;
-  int currentIndex = 0;
 
-  double previousOffset = 0.0;
-  double currentOffsetPercentage = 0.0;
+  final scrollBarKey = GlobalKey<RawScrollbarState>();
+
+  var currentIndex = 0;
+  var currentOffsetPercentage = 0.0;
+  var previousOffset = 0.0;
+
+  Animation<double>? get scrollBarOpacityAnimation {
+    return scrollBarKey.currentState?.scrollbarPainter.fadeoutOpacityAnimation;
+  }
 
   @override
   initState() {
@@ -32,6 +41,10 @@ class _ScrollProgressTeam3State extends State<ScrollProgressTeam3> {
         previousOffset = controller.offset;
       });
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      scrollBarOpacityAnimation!.addListener(() => setState(() {}));
+    });
   }
 
   @override
@@ -42,26 +55,22 @@ class _ScrollProgressTeam3State extends State<ScrollProgressTeam3> {
 
   @override
   Widget build(BuildContext context) {
-    // Create an infinite list of random images
     return Material(
       color: Colors.black,
-      child: NotificationListener<ScrollNotification>(
-        onNotification: (notification) {
-          notification.depth;
-          return false;
-        },
-        child: SafeArea(
+      child: SafeArea(
+        child: BlurredWidget(
+          blur: currentIndex >= maxImageCount + 1 ? 30 : 0,
           child: Stack(
             children: [
-              Scrollbar(
+              RawScrollbar(
+                key: scrollBarKey,
+                thickness: 3,
+                radius: Radius.circular(10),
+                thumbColor: Colors.white,
                 controller: controller,
-                child: ListView.separated(
+                child: ListView.builder(
                   controller: controller,
-                  itemCount: 20,
-                  separatorBuilder: (context, index) => Divider(
-                    height: 5,
-                    color: Colors.black,
-                  ),
+                  itemCount: 30,
                   itemBuilder: (context, index) {
                     return _RandomImage(index: index, height: imageHeight);
                   },
@@ -73,9 +82,15 @@ class _ScrollProgressTeam3State extends State<ScrollProgressTeam3> {
                   height: 100,
                   child: Align(
                     alignment: Alignment.centerRight,
-                    child: _ScrollBarPopup(
-                      index: maxImageCount - currentIndex,
-                      progress: currentIndex / maxImageCount,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: Opacity(
+                        opacity: scrollBarOpacityAnimation?.value ?? 0,
+                        child: _ScrollBarPopup(
+                          index: maxImageCount - currentIndex,
+                          progress: currentIndex / maxImageCount,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -155,12 +170,45 @@ class _ScrollBarPopup extends StatelessWidget {
           Text(
             '$index',
             style: TextStyle(
-                color: Colors.grey[200],
-                fontSize: 18,
-                fontWeight: FontWeight.bold),
+              color: Colors.grey[200],
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),
     );
   }
 }
+
+class BlurredWidget extends StatelessWidget {
+  const BlurredWidget({Key? key, required this.blur, required this.child})
+      : super(key: key);
+
+  final double blur;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    // This is a fix for Flutter Web where setting the blur to 0 throws an
+    // exception
+    final safeBlur = max(1e-3, this.blur);
+
+    return ClipRect(
+      child: Stack(
+        children: <Widget>[
+          child,
+          Positioned.fill(
+            child: IgnorePointer(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: safeBlur, sigmaY: safeBlur),
+                child: Container(color: Colors.transparent),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
