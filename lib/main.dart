@@ -33,6 +33,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'perspective/perspective.dart';
+import 'responsive_action_menu/responsive_action_menu.dart';
 import 'round_scrollbar/round_scrollbar.dart';
 
 void main() async {
@@ -104,6 +105,7 @@ final _dojos = <DojoWidget>[
   DojoBouncingBNB(),
   DojoOutOfScreen(),
   DojoAnimatedButton(),
+  DojoResponsiveActionMenu(),
 ];
 
 class DojoPicker extends StatelessWidget {
