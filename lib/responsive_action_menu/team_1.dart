@@ -97,7 +97,7 @@ class _ColumnState extends State<_Column> {
                   color:
                       isSelected ? Colors.white : Colors.white.withOpacity(0),
                 ),
-                child: UserListTileBody(user: user),
+                child: UserListTileBody(user: user, height: 100),
               ),
             ),
           );
