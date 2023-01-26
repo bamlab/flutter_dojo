@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 class ScrollProgressTeam3 extends StatefulWidget with TeamMixin {
   final teamName = 'Team3';
@@ -13,7 +12,8 @@ class ScrollProgressTeam3 extends StatefulWidget with TeamMixin {
 }
 
 class _ScrollProgressTeam3State extends State<ScrollProgressTeam3> {
-  final controller = ScrollController();
+  bool isBlur = false;
+
   final imageHeight = 300.0;
   final maxImageCount = 10;
 
@@ -23,21 +23,29 @@ class _ScrollProgressTeam3State extends State<ScrollProgressTeam3> {
   var currentOffsetPercentage = 0.0;
   var previousOffset = 0.0;
 
-  @override
-  initState() {
-    super.initState();
-    controller.addListener(() {
-      setState(() {
-        if (!controller.hasClients) {
-          return;
-        }
-        currentIndex = controller.offset ~/ imageHeight;
+  final scrollbarPopupKey = GlobalKey();
 
-        currentOffsetPercentage += (controller.offset - previousOffset) /
-            controller.position.maxScrollExtent;
-        previousOffset = controller.offset;
+  bool _handleScrollMetricsNotification(
+    ScrollMetricsNotification notification,
+  ) {
+    if (notification.metrics.axis == Axis.vertical) {
+      final metrics = notification.metrics;
+      setState(() {
+        currentIndex = notification.metrics.pixels ~/ imageHeight;
+
+        if (currentIndex >= maxImageCount + 1) {
+          isBlur = true;
+        } else {
+          isBlur = false;
+        }
+
+        currentOffsetPercentage +=
+            (metrics.pixels - previousOffset) / metrics.maxScrollExtent;
+        previousOffset = metrics.pixels;
       });
-    });
+    }
+
+    return false;
   }
 
   @override
@@ -46,16 +54,20 @@ class _ScrollProgressTeam3State extends State<ScrollProgressTeam3> {
       color: Colors.black,
       child: SafeArea(
         child: BlurredWidget(
-          blur: 0,
+          isBlur: isBlur,
+          scrollbarPopupKey: scrollbarPopupKey,
           child: Stack(
             children: [
               CustomScrollbar(
                 key: scrollBarKey,
-                child: ListView.builder(
-                  itemCount: 30,
-                  itemBuilder: (context, index) {
-                    return _RandomImage(index: index, height: imageHeight);
-                  },
+                child: NotificationListener<ScrollMetricsNotification>(
+                  onNotification: _handleScrollMetricsNotification,
+                  child: ListView.builder(
+                    itemCount: 30,
+                    itemBuilder: (context, index) {
+                      return _RandomImage(index: index, height: imageHeight);
+                    },
+                  ),
                 ),
               ),
               Align(
@@ -69,6 +81,7 @@ class _ScrollProgressTeam3State extends State<ScrollProgressTeam3> {
                       child: Opacity(
                         opacity: 1,
                         child: _ScrollBarPopup(
+                          key: scrollbarPopupKey,
                           index: maxImageCount - currentIndex,
                           progress: currentIndex / maxImageCount,
                         ),
@@ -163,28 +176,92 @@ class _ScrollBarPopup extends StatelessWidget {
   }
 }
 
-class BlurredWidget extends StatelessWidget {
-  const BlurredWidget({Key? key, required this.blur, required this.child})
-      : super(key: key);
+class BlurredWidget extends StatefulWidget {
+  const BlurredWidget({
+    Key? key,
+    required this.isBlur,
+    required this.child,
+    required this.scrollbarPopupKey,
+  }) : super(key: key);
 
-  final double blur;
+  final bool isBlur;
   final Widget child;
+  final GlobalKey scrollbarPopupKey;
+
+  @override
+  State<BlurredWidget> createState() => _BlurredWidgetState();
+}
+
+class _BlurredWidgetState extends State<BlurredWidget>
+    with TickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 300),
+  );
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant BlurredWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isBlur != widget.isBlur) {
+      setState(() {
+        if (widget.isBlur) {
+          _controller.forward();
+        } else {
+          _controller.reverse();
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.isBlur) {
+      return widget.child;
+    }
     // This is a fix for Flutter Web where setting the blur to 0 throws an
     // exception
-    final safeBlur = max(1e-3, this.blur);
+    final safeBlur = max(1e-3, 30.0);
+
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+
+    const scrollbarWidth = 3;
+
+    final scrollbarPopupRenderBox = widget.scrollbarPopupKey.currentContext
+        ?.findRenderObject() as RenderBox;
+    final scrollbarPopupSize = scrollbarPopupRenderBox.size;
+    final scrollbarPopupPosition =
+        scrollbarPopupRenderBox.localToGlobal(Offset.zero);
+
+    print(scrollbarPopupSize);
+    print(scrollbarPopupPosition);
 
     return ClipRect(
       child: Stack(
-        children: [
-          child,
-          Positioned.fill(
+        children: <Widget>[
+          widget.child,
+          Positioned(
+            left: (1 - _controller.value) * (width - scrollbarWidth),
+            right: scrollbarWidth * (1 - _controller.value),
+            top: scrollbarPopupPosition.dy * (1 - _controller.value),
+            bottom:
+                (height - scrollbarPopupPosition.dy) * (1 - _controller.value),
             child: IgnorePointer(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: safeBlur, sigmaY: safeBlur),
-                child: Container(color: Colors.transparent),
+              child: ClipRRect(
+                borderRadius:
+                    BorderRadius.circular((1 - _controller.value) * 200),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: safeBlur, sigmaY: safeBlur),
+                  child: Container(color: Colors.transparent),
+                ),
               ),
             ),
           )
