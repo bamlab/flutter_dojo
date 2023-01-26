@@ -20,8 +20,8 @@ class _ScrollProgressTeam3State extends State<ScrollProgressTeam3> {
   final scrollBarKey = GlobalKey<RawScrollbarState>();
 
   var currentIndex = 0;
+  var currentOffset = 0.0;
   var currentOffsetPercentage = 0.0;
-  var previousOffset = 0.0;
 
   final scrollbarPopupKey = GlobalKey();
 
@@ -31,17 +31,15 @@ class _ScrollProgressTeam3State extends State<ScrollProgressTeam3> {
     if (notification.metrics.axis == Axis.vertical) {
       final metrics = notification.metrics;
       setState(() {
-        currentIndex = notification.metrics.pixels ~/ imageHeight;
+        currentOffset = metrics.pixels;
+        currentIndex = currentOffset ~/ imageHeight;
+        currentOffsetPercentage = currentOffset / metrics.maxScrollExtent;
 
         if (currentIndex >= maxImageCount + 1) {
           isBlur = true;
         } else {
           isBlur = false;
         }
-
-        currentOffsetPercentage +=
-            (metrics.pixels - previousOffset) / metrics.maxScrollExtent;
-        previousOffset = metrics.pixels;
       });
     }
 
@@ -83,7 +81,7 @@ class _ScrollProgressTeam3State extends State<ScrollProgressTeam3> {
                         child: _ScrollBarPopup(
                           key: scrollbarPopupKey,
                           index: maxImageCount - currentIndex,
-                          progress: currentIndex / maxImageCount,
+                          progress: currentOffset / (imageHeight * maxImageCount),
                         ),
                       ),
                     ),
@@ -155,19 +153,26 @@ class _ScrollBarPopup extends StatelessWidget {
         children: [
           AspectRatio(
             aspectRatio: 1,
-            child: CircularProgressIndicator(
-              value: progress,
-              strokeWidth: 3,
-              backgroundColor: Colors.grey,
+            child: CustomPaint(
+              painter: _CircularProgressPainter(
+                value: progress,
+                strokeWidth: 6,
+                backgroundColor: Colors.grey,
+              ),
             ),
           ),
           SizedBox(width: 10),
-          Text(
-            (index < 0 ? 0 : index).toString(),
-            style: TextStyle(
-              color: Colors.grey[200],
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+          SizedBox(
+            width: 25,
+            child: Center(
+              child: Text(
+                (index < 0 ? 0 : index).toString(),
+                style: TextStyle(
+                  color: Colors.grey[200],
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
         ],
@@ -198,6 +203,7 @@ class _BlurredWidgetState extends State<BlurredWidget>
     vsync: this,
     duration: const Duration(milliseconds: 300),
   );
+
   @override
   void initState() {
     super.initState();
@@ -401,5 +407,50 @@ class _CustomScrollbarState extends State<CustomScrollbar>
     }
 
     return false;
+  }
+}
+
+class _CircularProgressPainter extends CustomPainter {
+  _CircularProgressPainter({
+    required this.value,
+    required this.strokeWidth,
+    required this.backgroundColor,
+  });
+
+  final double value;
+  final double strokeWidth;
+  final Color backgroundColor;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = backgroundColor
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = min(size.width / 2, size.height / 2) - strokeWidth / 2;
+
+    canvas.drawCircle(center, radius, paint);
+
+    paint.color = Colors.white;
+
+    final arcAngle = 2 * pi * value;
+
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -pi / 2,
+      arcAngle,
+      false,
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_CircularProgressPainter oldDelegate) {
+    return oldDelegate.strokeWidth != strokeWidth ||
+        oldDelegate.backgroundColor != backgroundColor ||
+        oldDelegate.value != value;
   }
 }
