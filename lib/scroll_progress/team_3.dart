@@ -163,7 +163,7 @@ class _ScrollBarPopup extends StatelessWidget {
           ),
           SizedBox(width: 10),
           Text(
-            '$index',
+            (index < 0 ? 0 : index).toString(),
             style: TextStyle(
               color: Colors.grey[200],
               fontSize: 18,
@@ -260,7 +260,44 @@ class _BlurredWidgetState extends State<BlurredWidget>
                     BorderRadius.circular((1 - _controller.value) * 200),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: safeBlur, sigmaY: safeBlur),
-                  child: Container(color: Colors.transparent),
+                  child: Container(
+                    color: Colors.transparent,
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 2,
+                              ),
+                            ),
+                            child: AnimatedRotation(
+                              duration: const Duration(milliseconds: 300),
+                              turns: _controller.value / 2,
+                              child: Icon(
+                                Icons.hourglass_top_rounded,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          Text(
+                            'Limit Reached',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
