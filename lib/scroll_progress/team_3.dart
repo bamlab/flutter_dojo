@@ -1,17 +1,19 @@
+import 'package:flutter/material.dart';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:bam_dojo/helpers/team_class.dart';
-import 'package:flutter/material.dart';
-
-class ScrollProgressTeam3 extends StatefulWidget with TeamMixin {
-  final teamName = 'Team3';
-
-  @override
-  State<ScrollProgressTeam3> createState() => _ScrollProgressTeam3State();
+void main() {
+  runApp(const ScrollProgress());
 }
 
-class _ScrollProgressTeam3State extends State<ScrollProgressTeam3> {
+class ScrollProgress extends StatefulWidget {
+  const ScrollProgress({super.key});
+
+  @override
+  State<ScrollProgress> createState() => _ScrollProgressState();
+}
+
+class _ScrollProgressState extends State<ScrollProgress> {
   bool isBlur = false;
 
   final imageHeight = 300.0;
@@ -22,6 +24,8 @@ class _ScrollProgressTeam3State extends State<ScrollProgressTeam3> {
   var currentIndex = 0;
   var currentOffset = 0.0;
   var currentOffsetPercentage = 0.0;
+
+  var scrollBarOpacity = 0.0;
 
   final scrollbarPopupKey = GlobalKey();
 
@@ -48,47 +52,62 @@ class _ScrollProgressTeam3State extends State<ScrollProgressTeam3> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.black,
-      child: SafeArea(
-        child: BlurredWidget(
-          isBlur: isBlur,
-          scrollbarPopupKey: scrollbarPopupKey,
-          child: Stack(
-            children: [
-              CustomScrollbar(
-                key: scrollBarKey,
-                child: NotificationListener<ScrollMetricsNotification>(
-                  onNotification: _handleScrollMetricsNotification,
-                  child: ListView.builder(
-                    itemCount: 30,
-                    itemBuilder: (context, index) {
-                      return _RandomImage(index: index, height: imageHeight);
-                    },
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Material(
+        color: Colors.black,
+        child: SafeArea(
+          child: BlurredWidget(
+            isBlur: isBlur,
+            scrollbarPopupKey: scrollbarPopupKey,
+            child: Stack(
+              children: [
+                CustomScrollbar(
+                  key: scrollBarKey,
+                  onOpacityChanged: (opacity) {
+                    setState(
+                      () => scrollBarOpacity = opacity,
+                    );
+                  },
+                  child: NotificationListener<ScrollMetricsNotification>(
+                    onNotification: _handleScrollMetricsNotification,
+                    child: ScrollConfiguration(
+                      behavior: ScrollConfiguration.of(context).copyWith(
+                        scrollbars: false,
+                      ),
+                      child: ListView.builder(
+                        itemCount: 30,
+                        itemBuilder: (context, index) {
+                          return _RandomImage(
+                              index: index, height: imageHeight);
+                        },
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              Align(
-                alignment: Alignment(1, currentOffsetPercentage * 2 - 1),
-                child: SizedBox(
-                  height: 100,
+                Opacity(
+                  opacity: scrollBarOpacity,
                   child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 16.0),
-                      child: Opacity(
-                        opacity: 1,
-                        child: _ScrollBarPopup(
-                          key: scrollbarPopupKey,
-                          index: maxImageCount - currentIndex,
-                          progress: currentOffset / (imageHeight * maxImageCount),
+                    alignment: Alignment(1, currentOffsetPercentage * 2 - 1),
+                    child: SizedBox(
+                      height: 100,
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 16.0),
+                          child: _ScrollBarPopup(
+                            key: scrollbarPopupKey,
+                            index: maxImageCount - currentIndex,
+                            progress:
+                                currentOffset / (imageHeight * maxImageCount),
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -243,12 +262,9 @@ class _BlurredWidgetState extends State<BlurredWidget>
 
     final scrollbarPopupRenderBox = widget.scrollbarPopupKey.currentContext
         ?.findRenderObject() as RenderBox;
-    final scrollbarPopupSize = scrollbarPopupRenderBox.size;
-    final scrollbarPopupPosition =
-        scrollbarPopupRenderBox.localToGlobal(Offset.zero);
-
-    print(scrollbarPopupSize);
-    print(scrollbarPopupPosition);
+    final scrollbarPopupPosition = scrollbarPopupRenderBox.localToGlobal(
+      Offset.zero,
+    );
 
     return ClipRect(
       child: Stack(
@@ -318,6 +334,7 @@ class CustomScrollbar extends StatefulWidget {
   const CustomScrollbar({
     Key? key,
     required this.child,
+    required this.onOpacityChanged,
     this.height = 100,
     this.thickness = 3,
     this.radius = const Radius.circular(10),
@@ -325,6 +342,8 @@ class CustomScrollbar extends StatefulWidget {
   }) : super(key: key);
 
   final Widget child;
+
+  final void Function(double opacity) onOpacityChanged;
 
   final double thickness;
   final double height;
@@ -352,7 +371,34 @@ class _CustomScrollbarState extends State<CustomScrollbar>
   @override
   void initState() {
     super.initState();
-    opacityAnimationController.addListener(() => setState(() {}));
+
+    opacityAnimationController.addListener(
+      () => setState(() => widget.onOpacityChanged(opacityAnimation.value)),
+    );
+  }
+
+  bool _handleScrollMetricsNotification(
+    ScrollMetricsNotification notification,
+  ) {
+    if (notification.metrics.axis == Axis.vertical) {
+      setState(() {
+        topOffset = notification.metrics.pixels /
+            notification.metrics.maxScrollExtent *
+            (notification.metrics.viewportDimension - widget.height);
+      });
+    }
+
+    return false;
+  }
+
+  bool _handleScrollNotification(ScrollNotification notification) {
+    if (notification is ScrollStartNotification) {
+      opacityAnimationController.forward();
+    } else if (notification is ScrollEndNotification) {
+      opacityAnimationController.reverse();
+    }
+
+    return false;
   }
 
   @override
@@ -383,30 +429,6 @@ class _CustomScrollbarState extends State<CustomScrollbar>
         ),
       ),
     );
-  }
-
-  bool _handleScrollMetricsNotification(
-    ScrollMetricsNotification notification,
-  ) {
-    if (notification.metrics.axis == Axis.vertical) {
-      setState(() {
-        topOffset = notification.metrics.pixels /
-            notification.metrics.maxScrollExtent *
-            (notification.metrics.viewportDimension - widget.height);
-      });
-    }
-
-    return false;
-  }
-
-  bool _handleScrollNotification(ScrollNotification notification) {
-    if (notification is ScrollStartNotification) {
-      opacityAnimationController.forward();
-    } else if (notification is ScrollEndNotification) {
-      opacityAnimationController.reverse();
-    }
-
-    return false;
   }
 }
 
