@@ -9,11 +9,41 @@ class UselessSliderTeam1 extends StatefulWidget with TeamMixin {
 }
 
 class _UselessSliderTeam1State extends State<UselessSliderTeam1> {
+  double width = 100;
+  double heigth = 100;
+
+  final double area = 10000.0;
+
+  @override
+  void initState() {
+    heigth = area / width;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
-      child: Container(),
+      child: GestureDetector(
+          onScaleUpdate: (scaleUpdateDetails) {
+            print(scaleUpdateDetails);
+            setState(() {
+              width = width * scaleUpdateDetails.scale;
+              heigth = area / width;
+            });
+          },
+          child: Container(
+            child: Center(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                child: Container(
+                  width: width,
+                  height: heigth,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          )),
     );
   }
 }
