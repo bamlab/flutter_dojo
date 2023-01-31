@@ -10,7 +10,6 @@ import 'team_3.dart';
 final _teams = <TeamMixin>[
   ScrollProgressTeam1(),
   ScrollProgressTeam2(),
-  ScrollProgressTeam3(),
 ];
 
 class DojoScrollProgress extends DojoWidget {
