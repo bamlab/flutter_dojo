@@ -29,6 +29,7 @@ import 'package:bam_dojo/surf/surf.dart';
 import 'package:bam_dojo/swooping_card/swooping_card.dart';
 import 'package:bam_dojo/time_machine/time_machine.dart';
 import 'package:bam_dojo/twofingers/twofingers.dart';
+import 'package:bam_dojo/useless_slider/useless_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -106,6 +107,7 @@ final _dojos = <DojoWidget>[
   DojoOutOfScreen(),
   DojoAnimatedButton(),
   DojoResponsiveActionMenu(),
+  DojoUselessSlider(),
 ];
 
 class DojoPicker extends StatelessWidget {
