@@ -13,7 +13,9 @@ class _UselessSliderTeam3State extends State<UselessSliderTeam3> {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
-      child: Container(),
+      child: GestureDetector(
+          onScaleStart: (_) => print('coucou'),
+          child: Container(color: Colors.white, height: 100, width: 100)),
     );
   }
 }
