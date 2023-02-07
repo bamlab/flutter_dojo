@@ -361,9 +361,7 @@ class _CustomScrollbarState extends State<CustomScrollbar>
     duration: Duration(milliseconds: 200),
   );
   late final opacityAnimation = opacityAnimationController.drive(
-    Tween<double>(begin: 0, end: 1).chain(
-      CurveTween(curve: Curves.easeInOut),
-    ),
+    CurveTween(curve: Curves.easeInOut),
   );
 
   double topOffset = 0;

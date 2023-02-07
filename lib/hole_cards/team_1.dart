@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:flutter/material.dart';
 
@@ -56,22 +58,57 @@ class _CardsHandlerState extends State<_CardsHandler>
         behavior: HitTestBehavior.opaque,
         onTap: cardOffsetAnimationController.forward,
         child: Center(
-          child: ClipPath(
-            clipper: _CardClipper(),
-            child: Transform.translate(
-              offset: Offset(0, cardOffset),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: _BlueCard(
-                  size: cardSize,
+          child: Stack(
+            children: [
+              // Rotate backwards
+              for (var i = 0; i < 100; i++)
+                Transform(
+                  transform: Matrix4.identity()
+                    ..translate(cardOffset)
+                    ..rotateX(-pi / 2 + 0.2),
+                  child: Transform.translate(
+                    offset: Offset(-200, -i.toDouble()*cardOffsetAnimationController.value*100+1000),
+                    child: CustomPaint(
+                      painter: BlackHolePainter(),
+                    ),
+                  ),
                 ),
-              ),
-            ),
+            ],
           ),
         ),
       ),
     );
   }
+}
+
+// Create a black hole with a grey border
+class BlackHolePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.grey
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 10;
+
+    canvas.drawCircle(
+      Offset(size.width / 2, size.height / 2),
+      100,
+      paint,
+    );
+
+    // paint
+    //   ..color = Colors.black
+    //   ..style = PaintingStyle.fill;
+    //
+    // canvas.drawCircle(
+    //   Offset(size.width / 2, size.height / 2),
+    //   100,
+    //   paint,
+    // );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _CardClipper extends CustomClipper<Path> {
