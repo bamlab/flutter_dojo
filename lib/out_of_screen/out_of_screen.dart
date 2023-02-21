@@ -10,7 +10,6 @@ import 'team_3.dart';
 
 // Design: https://twitter.com/philipcdavis/status/1550133881168269312
 
-
 final _teams = <TeamMixin>[
   const OutOfScreenTeam1(),
   const OutOfScreenTeam2(),
@@ -26,7 +25,6 @@ class DojoOutOfScreen extends DojoWidget {
 
   static Widget outOfScreenCard() => OutOfScreenCard();
 }
-
 
 class BasicScreen extends StatelessWidget {
   const BasicScreen({Key? key}) : super(key: key);
@@ -89,79 +87,77 @@ class OutOfScreenCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final avatarSize = 100.0;
-    return Center(
-      child: Material(
-        color: Colors.transparent,
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                blurRadius: 10,
-                spreadRadius: 5,
-              ),
-            ],
-          ),
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              // Avatar
-              Positioned(
-                top: -avatarSize / 2,
-                left: 0,
-                right: 0,
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: SizedBox.square(
-                    dimension: avatarSize,
-                    child: _Avatar(),
-                  ),
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 10,
+              spreadRadius: 5,
+            ),
+          ],
+        ),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // Avatar
+            Positioned(
+              top: -avatarSize / 2,
+              left: 0,
+              right: 0,
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: SizedBox.square(
+                  dimension: avatarSize,
+                  child: _Avatar(),
                 ),
               ),
+            ),
 
-              // Content
-              Positioned(
-                child: Padding(
-                  padding: EdgeInsets.only(top: avatarSize / 2),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(height: 8),
-                      Text(
-                        'John Doe',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 35,
-                        ),
+            // Content
+            Positioned(
+              child: Padding(
+                padding: EdgeInsets.only(top: avatarSize / 2),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: 8),
+                    Text(
+                      'John Doe',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 35,
                       ),
-                      SizedBox(height: 8),
-                      _RoundedSeparator(),
-                      SizedBox(height: 8),
-                      Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _ActionRow(icon: Icons.settings, label: 'Account'),
-                            SizedBox(height: 8),
-                            _ActionRow(icon: Icons.help, label: 'Help'),
-                            SizedBox(height: 8),
-                            _ActionRow(icon: Icons.logout, label: 'Logout'),
-                          ],
-                        ),
+                    ),
+                    SizedBox(height: 8),
+                    _RoundedSeparator(),
+                    SizedBox(height: 8),
+                    Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _ActionRow(icon: Icons.settings, label: 'Account'),
+                          SizedBox(height: 8),
+                          _ActionRow(icon: Icons.help, label: 'Help'),
+                          SizedBox(height: 8),
+                          _ActionRow(icon: Icons.logout, label: 'Logout'),
+                        ],
                       ),
-                      SizedBox(height: 8),
-                      SizedBox(height: avatarSize / 2),
-                    ],
-                  ),
+                    ),
+                    SizedBox(height: 8),
+                    SizedBox(height: avatarSize / 2),
+                  ],
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
       ),
     );
@@ -237,7 +233,7 @@ class _AvatarLinkProvider extends InheritedWidget {
 
   static _AvatarLinkProvider of(BuildContext context) {
     final _AvatarLinkProvider? result =
-    context.dependOnInheritedWidgetOfExactType<_AvatarLinkProvider>();
+        context.dependOnInheritedWidgetOfExactType<_AvatarLinkProvider>();
     assert(result != null, 'No _AvatarProvider found in context');
     return result!;
   }
@@ -271,7 +267,7 @@ class _AvatarLinkProviderScopeState extends State<AvatarLinkProviderScope> {
       randomlyChangeLink: () {
         setState(() {
           _link =
-          'https://avatars.dicebear.com/api/adventurer/${Random().nextInt(1000)}.png';
+              'https://avatars.dicebear.com/api/adventurer/${Random().nextInt(1000)}.png';
         });
       },
     );
