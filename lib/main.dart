@@ -105,11 +105,11 @@ final _dojos = <DojoWidget>[
   DojoShakingField(),
   DojoHeroNoHero(),
   DojoBouncingBNB(),
-  DojoOutOfScreen(),
   DojoAnimatedButton(),
   DojoResponsiveActionMenu(),
   DojoUselessSlider(),
   DojoRipplingWave(),
+  DojoOutOfScreen(),
 ];
 
 class DojoPicker extends StatelessWidget {

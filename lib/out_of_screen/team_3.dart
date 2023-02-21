@@ -10,12 +10,12 @@ class OutOfScreenTeam3 extends TeamWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Use https://docs.flutter.dev/cookbook/animation/physics-simulation
     return AvatarLinkProviderScope(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Material(
           child: SafeArea(
-            // Try DojoOutOfScreen.outOfScreenCard to get the card design
             child: DojoOutOfScreen.basicScreen(),
           ),
         ),
