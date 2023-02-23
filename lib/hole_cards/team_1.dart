@@ -25,25 +25,54 @@ class _CardsHandler extends StatefulWidget {
 }
 
 class _CardsHandlerState extends State<_CardsHandler>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   final cardSize = 150.0;
 
   late final cardOffsetTween = Tween<double>(
     begin: 0,
     end: 2 * cardSize,
+  ).chain(CurveTween(curve: Curves.easeInBack));
+
+  late final cardRotationTween = Tween<double>(
+    begin: 0,
+    end: 0.5,
+  ).chain(CurveTween(curve: Curves.easeInBack));
+
+  late final cardElevationTween = Tween<double>(
+    begin: 2,
+    end: 20,
+  );
+
+  late final holeSizeTween = Tween<double>(
+    begin: 0,
+    end: 1.5 * cardSize,
   );
 
   late final cardOffsetAnimationController = AnimationController(
     vsync: this,
-    duration: const Duration(seconds: 1),
+    duration: const Duration(milliseconds: 1500),
   );
 
-  double get cardOffset {
-    return cardOffsetTween.evaluate(cardOffsetAnimationController);
-  }
+  late final holeAnimationController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 400),
+  );
 
+  double get cardOffset =>
+      cardOffsetTween.evaluate(cardOffsetAnimationController);
+
+  double get cardRotation =>
+      cardRotationTween.evaluate(cardOffsetAnimationController);
+
+  double get cardElevation =>
+      cardElevationTween.evaluate(cardOffsetAnimationController);
+
+  double get holeSize => holeSizeTween.evaluate(holeAnimationController);
+
+  @override
   initState() {
     super.initState();
+    holeAnimationController.addListener(() => setState(() {}));
     cardOffsetAnimationController.addListener(() => setState(() {}));
   }
 
@@ -51,29 +80,64 @@ class _CardsHandlerState extends State<_CardsHandler>
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: cardOffsetAnimationController.reset,
+        onPressed: () {
+          cardOffsetAnimationController.reset();
+          holeAnimationController.reset();
+        },
         child: const Icon(Icons.lock_reset_outlined),
       ),
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: cardOffsetAnimationController.forward,
+        onTap: () async {
+          holeAnimationController.forward();
+          await cardOffsetAnimationController.forward();
+          holeAnimationController.reverse();
+        },
         child: Center(
-          child: Stack(
-            children: [
-              // Rotate backwards
-              for (var i = 0; i < 100; i++)
-                Transform(
-                  transform: Matrix4.identity()
-                    ..translate(cardOffset)
-                    ..rotateX(-pi / 2 + 0.2),
-                  child: Transform.translate(
-                    offset: Offset(-200, -i.toDouble()*cardOffsetAnimationController.value*100+1000),
-                    child: CustomPaint(
-                      painter: BlackHolePainter(),
+          child: ClipPath(
+            clipper: _BlackHoleClipper(),
+            child: Stack(
+              alignment: Alignment.bottomCenter,
+              clipBehavior: Clip.none,
+              children: [
+                Opacity(
+                  opacity: 0,
+                  child: SizedBox(
+                    width: cardSize * 1.5,
+                    child: Image.asset(
+                      'assets/images/hole.png',
+                      fit: BoxFit.fill,
                     ),
                   ),
                 ),
-            ],
+                SizedBox(
+                  width: holeSize,
+                  child: Image.asset(
+                    'assets/images/hole.png',
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Transform.translate(
+                      offset: Offset(0, cardOffset),
+                      child: Transform.rotate(
+                        angle: cardRotation,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: _BlueCard(
+                            size: cardSize,
+                            elevation: cardElevation,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -81,80 +145,60 @@ class _CardsHandlerState extends State<_CardsHandler>
   }
 }
 
-// Create a black hole with a grey border
-class BlackHolePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.grey
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 10;
-
-    canvas.drawCircle(
-      Offset(size.width / 2, size.height / 2),
-      100,
-      paint,
-    );
-
-    // paint
-    //   ..color = Colors.black
-    //   ..style = PaintingStyle.fill;
-    //
-    // canvas.drawCircle(
-    //   Offset(size.width / 2, size.height / 2),
-    //   100,
-    //   paint,
-    // );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-class _CardClipper extends CustomClipper<Path> {
+class _BlackHoleClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     final path = Path();
-    path.lineTo(0, 0);
-    path.lineTo(size.width, 0);
-    path.lineTo(size.width, size.height);
-    // path.quadraticBezierTo(
-    //   size.width / 2, // control point x
-    //   size.height + 20, // control point y
-    //   0, // destination x
-    //   size.height, // destination y
-    // );
-    path.arcToPoint(
-      Offset(0, size.height),
-      radius: const Radius.circular(20),
+    // Start from half the height at the left
+    path.moveTo(0, size.height / 2);
+    // Go to half the height at the right passing through the bottom center
+    // using an arc
+    path.arcTo(
+      Rect.fromCenter(
+        center: Offset(size.width / 2, size.height / 2),
+        width: size.width,
+        height: size.height,
+      ),
+      0,
+      pi,
+      true,
     );
+    path.lineTo(0, -1000);
 
+    path.lineTo(size.width, -1000);
+    path.close();
     return path;
   }
 
-  bool shouldReclip(_CardClipper oldClipper) => true;
+  bool shouldReclip(_BlackHoleClipper oldClipper) => true;
 }
 
 class _BlueCard extends StatelessWidget {
   const _BlueCard({
     Key? key,
     required this.size,
+    required this.elevation,
   }) : super(key: key);
 
   final double size;
+  final double elevation;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.square(
-      dimension: size,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.blue,
-        ),
-        child: Center(
-          child: Text(
-            'Blue',
-            style: TextStyle(color: Colors.white, fontSize: 18),
+    return Material(
+      elevation: elevation,
+      borderRadius: BorderRadius.circular(10),
+      child: SizedBox.square(
+        dimension: size,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.blue,
+          ),
+          child: Center(
+            child: Text(
+              'Blue',
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
           ),
         ),
       ),
