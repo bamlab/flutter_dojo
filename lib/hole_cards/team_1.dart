@@ -32,17 +32,14 @@ class _CardsHandlerState extends State<_CardsHandler>
     begin: 0,
     end: 2 * cardSize,
   ).chain(CurveTween(curve: Curves.easeInBack));
-
   late final cardRotationTween = Tween<double>(
     begin: 0,
     end: 0.5,
   ).chain(CurveTween(curve: Curves.easeInBack));
-
   late final cardElevationTween = Tween<double>(
     begin: 2,
     end: 20,
   );
-
   late final holeSizeTween = Tween<double>(
     begin: 0,
     end: 1.5 * cardSize,
@@ -50,23 +47,19 @@ class _CardsHandlerState extends State<_CardsHandler>
 
   late final cardOffsetAnimationController = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 1500),
+    duration: const Duration(milliseconds: 1000),
   );
-
   late final holeAnimationController = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 400),
+    duration: const Duration(milliseconds: 300),
   );
 
   double get cardOffset =>
       cardOffsetTween.evaluate(cardOffsetAnimationController);
-
   double get cardRotation =>
       cardRotationTween.evaluate(cardOffsetAnimationController);
-
   double get cardElevation =>
       cardElevationTween.evaluate(cardOffsetAnimationController);
-
   double get holeSize => holeSizeTween.evaluate(holeAnimationController);
 
   @override
@@ -79,65 +72,72 @@ class _CardsHandlerState extends State<_CardsHandler>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          cardOffsetAnimationController.reset();
-          holeAnimationController.reset();
-        },
-        child: const Icon(Icons.lock_reset_outlined),
+      floatingActionButton: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton(
+            onPressed: () async {
+              holeAnimationController.forward();
+              await cardOffsetAnimationController.forward();
+              Future.delayed(Duration(milliseconds: 200),
+                  () => holeAnimationController.reverse());
+            },
+            child: const Icon(Icons.remove),
+          ),
+          const SizedBox(width: 20),
+          FloatingActionButton(
+            onPressed: () {
+              cardOffsetAnimationController.reverse();
+              holeAnimationController.reverse();
+            },
+            child: const Icon(Icons.add),
+          ),
+        ],
       ),
-      body: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () async {
-          holeAnimationController.forward();
-          await cardOffsetAnimationController.forward();
-          holeAnimationController.reverse();
-        },
-        child: Center(
-          child: ClipPath(
-            clipper: _BlackHoleClipper(),
-            child: Stack(
-              alignment: Alignment.bottomCenter,
-              clipBehavior: Clip.none,
-              children: [
-                Opacity(
-                  opacity: 0,
-                  child: SizedBox(
-                    width: cardSize * 1.5,
-                    child: Image.asset(
-                      'assets/images/hole.png',
-                      fit: BoxFit.fill,
-                    ),
-                  ),
+      body: Center(
+        child: ClipPath(
+          clipper: _BlackHoleClipper(),
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            clipBehavior: Clip.none,
+            children: [
+              SizedBox(
+                width: holeSize,
+                child: Image.asset(
+                  'assets/images/hole.png',
+                  fit: BoxFit.fill,
                 ),
-                SizedBox(
-                  width: holeSize,
-                  child: Image.asset(
-                    'assets/images/hole.png',
-                    fit: BoxFit.fill,
-                  ),
-                ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Transform.translate(
-                      offset: Offset(0, cardOffset),
-                      child: Transform.rotate(
-                        angle: cardRotation,
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: _BlueCard(
-                            size: cardSize,
-                            elevation: cardElevation,
-                          ),
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Transform.translate(
+                    offset: Offset(0, cardOffset),
+                    child: Transform.rotate(
+                      angle: cardRotation,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: _Card(
+                          size: cardSize,
+                          elevation: cardElevation,
                         ),
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+              Opacity(
+                opacity: 0,
+                child: SizedBox(
+                  width: cardSize * 1.5,
+                  child: Image.asset(
+                    'assets/images/hole.png',
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -172,8 +172,8 @@ class _BlackHoleClipper extends CustomClipper<Path> {
   bool shouldReclip(_BlackHoleClipper oldClipper) => true;
 }
 
-class _BlueCard extends StatelessWidget {
-  const _BlueCard({
+class _Card extends StatelessWidget {
+  const _Card({
     Key? key,
     required this.size,
     required this.elevation,
@@ -196,7 +196,8 @@ class _BlueCard extends StatelessWidget {
           ),
           child: Center(
             child: Text(
-              'Blue',
+              'Hello\nWorld',
+              textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white, fontSize: 18),
             ),
           ),
