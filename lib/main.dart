@@ -39,6 +39,8 @@ import 'perspective/perspective.dart';
 import 'responsive_action_menu/responsive_action_menu.dart';
 import 'round_scrollbar/round_scrollbar.dart';
 
+// late List<CameraDescription> _cameras;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -56,6 +58,7 @@ void main() async {
     SystemUiMode.edgeToEdge,
     overlays: [SystemUiOverlay.top],
   );
+  // _cameras = await availableCameras();
   runApp(const MyApp());
 }
 
