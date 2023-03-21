@@ -34,19 +34,36 @@ class _BigWidget extends StatefulWidget {
 class _BigWidgetState extends State<_BigWidget>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  Animation<double>? _translateAnimation;
 
-  var translationValue = 0.0;
-  late double outOfScreenCardHeight = 100;
+  double get translationValue => _translateAnimation?.value ?? 0;
+
+  /// Used to compute the out of screen card height.
   final outOfScreenCardKey = GlobalKey();
-  late Animation<double> _animation = _controller.drive(
-    Tween(
-      begin: 0.0,
-      end: outOfScreenCardHeight,
-    ),
-  );
+
+  // This will get initialized after the first frame.
+  double? outOfScreenCardHeight;
 
   void _runAnimation() {
     _controller.isCompleted ? _controller.reverse() : _controller.forward();
+  }
+
+  Matrix4 _getCurrentTransformMatrix() {
+    // We can only start translating after the first frame because we need the
+    // height of the out of screen card.
+    final outOfScreenCardHeight = this.outOfScreenCardHeight;
+    final shouldTranslate = outOfScreenCardHeight != null;
+    final transformMatrix = Matrix4.identity();
+    if (shouldTranslate) {
+      transformMatrix
+        ..setEntry(
+          3,
+          2,
+          translationValue / outOfScreenCardHeight * -0.00051,
+        )
+        ..rotateX(translationValue / outOfScreenCardHeight * -0.5);
+    }
+    return transformMatrix;
   }
 
   @override
@@ -57,16 +74,18 @@ class _BigWidgetState extends State<_BigWidget>
       duration: const Duration(milliseconds: 1000),
     );
 
-    _controller.addListener(() {
-      setState(() {
-        translationValue = _animation.value;
-      });
-    });
+    _controller.addListener(() => setState(() {}));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         final context = outOfScreenCardKey.currentContext!;
         outOfScreenCardHeight = context.size!.height;
+        _translateAnimation = _controller.drive(
+          Tween(
+            begin: 0.0,
+            end: outOfScreenCardHeight,
+          ),
+        );
       });
     });
   }
@@ -83,22 +102,14 @@ class _BigWidgetState extends State<_BigWidget>
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () {
-        _runAnimation();
-      },
+      onTap: _runAnimation,
       child: Stack(
         children: [
           Transform.translate(
             offset: Offset(0, -translationValue / 1.5),
             child: Transform(
               alignment: Alignment.center,
-              transform: Matrix4.identity()
-                ..setEntry(
-                  3,
-                  2,
-                  translationValue / outOfScreenCardHeight * -0.00051,
-                )
-                ..rotateX(translationValue / outOfScreenCardHeight * -0.5),
+              transform: _getCurrentTransformMatrix(),
               child: ColoredBox(
                 color: Colors.blueAccent,
                 child: DojoOutOfScreen.basicScreen(),
