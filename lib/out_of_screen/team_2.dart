@@ -1,5 +1,6 @@
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 
 import 'out_of_screen.dart';
 
@@ -24,6 +25,20 @@ class OutOfScreenTeam2 extends TeamWidget {
   }
 }
 
+enum _AnimationState {
+  /// The animation is not running.
+  idleStart,
+
+  /// The animation is not running.
+  idleEnd,
+
+  /// The animation is running forward.
+  forward,
+
+  /// The animation is running backward.
+  backward,
+}
+
 class _BigWidget extends StatefulWidget {
   const _BigWidget({Key? key}) : super(key: key);
 
@@ -34,9 +49,11 @@ class _BigWidget extends StatefulWidget {
 class _BigWidgetState extends State<_BigWidget>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  Animation<double>? _translateAnimation;
 
-  double get translationValue => _translateAnimation?.value ?? 0;
+  double get translationValue => _controller.value;
+  _AnimationState animationState = _AnimationState.idleStart;
+
+  double dragOutOfScreenCardDy = 0;
 
   /// Used to compute the out of screen card height.
   final outOfScreenCardKey = GlobalKey();
@@ -44,8 +61,44 @@ class _BigWidgetState extends State<_BigWidget>
   // This will get initialized after the first frame.
   double? outOfScreenCardHeight;
 
-  void _runAnimation() {
-    _controller.isCompleted ? _controller.reverse() : _controller.forward();
+  void _runAnimation() async {
+    final simulationForward = SpringSimulation(
+      SpringDescription(
+        mass: 1,
+        stiffness: 100,
+        damping: 11,
+      ),
+      0.0, // starting point
+      outOfScreenCardHeight!, // ending point
+      2000, // velocity
+    );
+
+    final simulationBackward = SpringSimulation(
+      SpringDescription(
+        mass: 1,
+        stiffness: 100,
+        damping: 8,
+      ),
+      outOfScreenCardHeight!, // ending point
+      0.0, // starting point
+      2000, // velocity
+    );
+
+    switch (animationState) {
+      case _AnimationState.idleStart:
+        animationState = _AnimationState.forward;
+        await _controller.animateWith(simulationForward);
+        animationState = _AnimationState.idleEnd;
+        break;
+      case _AnimationState.idleEnd:
+        animationState = _AnimationState.backward;
+        await _controller.animateWith(simulationBackward);
+        animationState = _AnimationState.idleStart;
+        break;
+      case _AnimationState.forward:
+      case _AnimationState.backward:
+        break;
+    }
   }
 
   Matrix4 _getCurrentTransformMatrix() {
@@ -72,6 +125,9 @@ class _BigWidgetState extends State<_BigWidget>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
+      lowerBound: -10000,
+      upperBound: 10000,
+      value: 0,
     );
 
     _controller.addListener(() => setState(() {}));
@@ -80,12 +136,6 @@ class _BigWidgetState extends State<_BigWidget>
       setState(() {
         final context = outOfScreenCardKey.currentContext!;
         outOfScreenCardHeight = context.size!.height;
-        _translateAnimation = _controller.drive(
-          Tween(
-            begin: 0.0,
-            end: outOfScreenCardHeight,
-          ),
-        );
       });
     });
   }
@@ -120,11 +170,23 @@ class _BigWidgetState extends State<_BigWidget>
             top: screenSize.height - translationValue,
             left: 0,
             right: 0,
-            child: ColoredBox(
-              color: Colors.redAccent,
-              child: KeyedSubtree(
-                key: outOfScreenCardKey,
-                child: DojoOutOfScreen.outOfScreenCard(),
+            child: Transform.translate(
+              offset: Offset(0, dragOutOfScreenCardDy),
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onPanUpdate: (details) {
+                  setState(() {
+                    dragOutOfScreenCardDy += details.delta.dy / 2;
+                  });
+                  print(dragOutOfScreenCardDy);
+                },
+                child: ColoredBox(
+                  color: Colors.redAccent,
+                  child: KeyedSubtree(
+                    key: outOfScreenCardKey,
+                    child: DojoOutOfScreen.outOfScreenCard(),
+                  ),
+                ),
               ),
             ),
           ),
