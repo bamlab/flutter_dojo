@@ -10,7 +10,6 @@ import 'team_3.dart';
 
 // Design: https://twitter.com/philipcdavis/status/1550133881168269312
 
-
 final _teams = <TeamMixin>[
   const OutOfScreenTeam1(),
   const OutOfScreenTeam2(),
@@ -26,7 +25,6 @@ class DojoOutOfScreen extends DojoWidget {
 
   static Widget outOfScreenCard() => OutOfScreenCard();
 }
-
 
 class BasicScreen extends StatelessWidget {
   const BasicScreen({Key? key}) : super(key: key);
@@ -61,19 +59,19 @@ class BasicScreen extends StatelessWidget {
           ),
           Expanded(
             child: Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shape: const StadiumBorder(),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 30,
-                    vertical: 15,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.arrow_upward_rounded, size: 100),
+                  SizedBox(height: 16),
+                  Text(
+                    'Click to see your profile',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
                   ),
-                ),
-                child: Text('Randomly change the avatar'),
-                onPressed: () {
-                  _AvatarLinkProvider.of(context).randomlyChangeLink();
-                },
+                ],
               ),
             ),
           )
@@ -100,8 +98,8 @@ class OutOfScreenCard extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.2),
-                blurRadius: 10,
-                spreadRadius: 5,
+                blurRadius: 20,
+                spreadRadius: 10,
               ),
             ],
           ),
@@ -129,7 +127,7 @@ class OutOfScreenCard extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      SizedBox(height: 8),
+                      SizedBox(height: 16),
                       Text(
                         'John Doe',
                         textAlign: TextAlign.center,
@@ -138,18 +136,18 @@ class OutOfScreenCard extends StatelessWidget {
                           fontSize: 35,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      SizedBox(height: 16),
                       _RoundedSeparator(),
-                      SizedBox(height: 8),
+                      SizedBox(height: 16),
                       Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _ActionRow(icon: Icons.settings, label: 'Account'),
-                            SizedBox(height: 8),
+                            SizedBox(height: 12),
                             _ActionRow(icon: Icons.help, label: 'Help'),
-                            SizedBox(height: 8),
+                            SizedBox(height: 12),
                             _ActionRow(icon: Icons.logout, label: 'Logout'),
                           ],
                         ),
@@ -181,8 +179,8 @@ class _ActionRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon),
-        SizedBox(width: 8),
-        Text(label, style: TextStyle(fontSize: 30)),
+        SizedBox(width: 16),
+        Text(label, style: TextStyle(fontSize: 24)),
       ],
     );
   }
@@ -199,6 +197,19 @@ class _RoundedSeparator extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.grey[300],
         borderRadius: BorderRadius.circular(10),
+      ),
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(6.0),
+          child: SizedBox.expand(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -237,7 +248,7 @@ class _AvatarLinkProvider extends InheritedWidget {
 
   static _AvatarLinkProvider of(BuildContext context) {
     final _AvatarLinkProvider? result =
-    context.dependOnInheritedWidgetOfExactType<_AvatarLinkProvider>();
+        context.dependOnInheritedWidgetOfExactType<_AvatarLinkProvider>();
     assert(result != null, 'No _AvatarProvider found in context');
     return result!;
   }
@@ -271,7 +282,7 @@ class _AvatarLinkProviderScopeState extends State<AvatarLinkProviderScope> {
       randomlyChangeLink: () {
         setState(() {
           _link =
-          'https://avatars.dicebear.com/api/adventurer/${Random().nextInt(1000)}.png';
+              'https://avatars.dicebear.com/api/adventurer/${Random().nextInt(1000)}.png';
         });
       },
     );

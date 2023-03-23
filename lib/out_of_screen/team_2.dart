@@ -16,9 +16,7 @@ class OutOfScreenTeam2 extends TeamWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Material(
-          child: SafeArea(
-            child: _BigWidget(),
-          ),
+          child: _BigWidget(),
         ),
       ),
     );
@@ -62,23 +60,21 @@ class _BigWidgetState extends State<_BigWidget>
   double? outOfScreenCardHeight;
 
   void _runAnimation() async {
+    final springDescription = SpringDescription(
+      mass: 1.5,
+      stiffness: 200,
+      damping: 11,
+    );
+
     final simulationForward = SpringSimulation(
-      SpringDescription(
-        mass: 1,
-        stiffness: 100,
-        damping: 11,
-      ),
+      springDescription,
       0.0, // starting point
       outOfScreenCardHeight!, // ending point
       2000, // velocity
     );
 
     final simulationBackward = SpringSimulation(
-      SpringDescription(
-        mass: 1,
-        stiffness: 100,
-        damping: 8,
-      ),
+      springDescription,
       outOfScreenCardHeight!, // ending point
       0.0, // starting point
       2000, // velocity
@@ -150,47 +146,59 @@ class _BigWidgetState extends State<_BigWidget>
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: _runAnimation,
-      child: Stack(
-        children: [
-          Transform.translate(
-            offset: Offset(0, -translationValue / 1.5),
-            child: Transform(
-              alignment: Alignment.center,
-              transform: _getCurrentTransformMatrix(),
-              child: ColoredBox(
-                color: Colors.blueAccent,
-                child: DojoOutOfScreen.basicScreen(),
-              ),
-            ),
-          ),
-          Positioned(
-            top: screenSize.height - translationValue,
-            left: 0,
-            right: 0,
-            child: Transform.translate(
-              offset: Offset(0, dragOutOfScreenCardDy),
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onPanUpdate: (details) {
-                  setState(() {
-                    dragOutOfScreenCardDy += details.delta.dy / 2;
-                  });
-                  print(dragOutOfScreenCardDy);
-                },
-                child: ColoredBox(
-                  color: Colors.redAccent,
-                  child: KeyedSubtree(
-                    key: outOfScreenCardKey,
-                    child: DojoOutOfScreen.outOfScreenCard(),
+    return ColoredBox(
+      color: Colors.grey[200]!,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: _runAnimation,
+        child: Stack(
+          children: [
+            Transform.translate(
+              offset: Offset(0, -translationValue),
+              child: Transform(
+                alignment: Alignment.center,
+                transform: _getCurrentTransformMatrix(),
+                child: PhysicalModel(
+                  color: Colors.transparent,
+                  shadowColor: Colors.black.withOpacity(1),
+                  elevation: 20,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: ColoredBox(
+                      color: Colors.white,
+                      child: SafeArea(
+                        child: DojoOutOfScreen.basicScreen(),
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+            Positioned(
+              top: screenSize.height - translationValue * 1.1,
+              left: 0,
+              right: 0,
+              child: Transform.translate(
+                offset: Offset(0, dragOutOfScreenCardDy),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onPanUpdate: (details) {
+                    setState(() {
+                      dragOutOfScreenCardDy += details.delta.dy / 2;
+                    });
+                    print(dragOutOfScreenCardDy);
+                  },
+                  child: KeyedSubtree(
+                    key: outOfScreenCardKey,
+                    child: SafeArea(
+                      child: DojoOutOfScreen.outOfScreenCard(),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
