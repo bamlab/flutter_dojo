@@ -13,18 +13,25 @@ class ResponsiveActionMenuTeam3 extends TeamWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Stack(
+    return MaterialApp(
+      home: Stack(
         children: [
           Positioned.fill(
-            child: Image.network(
-              "https://images.unsplash.com/photo-1568826069038-f3de1448e9a1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=922&q=80",
-              fit: BoxFit.cover,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color.fromRGBO(238, 188, 175, 80),
+                    Color.fromRGBO(216, 91, 175, 80),
+                    Color.fromRGBO(130, 174, 230, 80),
+                  ],
+                ),
+              ),
             ),
           ),
-          Center(
-            child: _MyMenu(),
-          ),
+          Center(child: _MyMenu()),
         ],
       ),
     );
@@ -40,141 +47,109 @@ class _MyMenu extends StatefulWidget {
 
 class _MyMenuState extends State<_MyMenu> {
   double? yOffset = null;
+  final key = GlobalKey();
+
+  final padding = 20.0;
+  final itemHeight = 60.0;
+  final separatorHeight = 20.0;
+  late final overRectangleHeight = itemHeight + 20;
+
+  void setClamppedYOffset(double? value) {
+    setState(() {
+      yOffset = value?.clamp(
+        padding,
+        (key.currentContext?.size?.height ?? 0) - overRectangleHeight,
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final itemHeight = 60.0;
-      final separatorHeight = 20.0;
-      final padding = 20.0;
+    return KeyedSubtree(
+      key: key,
+      child: LayoutBuilder(builder: (context, constraints) {
+        final initialWidth = constraints.maxWidth * 0.7;
+        final overRectangleWidth = initialWidth + 40;
 
-      final initialWidth = constraints.maxWidth * 0.7;
-      final overRectangleWidth = initialWidth + 40;
-      final overRectangleHeight = itemHeight + 20;
+        final yOffset = this.yOffset;
 
-      final yOffset = this.yOffset;
-
-      return SizedBox(
-        width: initialWidth,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            if (yOffset != null)
-              Positioned(
-                left: (initialWidth - overRectangleWidth) / 2,
-                width: overRectangleWidth,
-                top: (itemHeight - overRectangleHeight) / 2 + yOffset,
-                height: overRectangleHeight,
-                child: TweenAnimationBuilder(
-                  tween: Tween<double>(begin: 0, end: 1),
-                  duration: Duration(milliseconds: 200),
-                  builder: (context, value, child) {
-                    return Opacity(
-                      opacity: value,
-                      child: child!,
-                    );
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: ColoredBox(
-                      color: Colors.white,
+        return SizedBox(
+          width: initialWidth,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              if (yOffset != null)
+                Positioned(
+                  left: (initialWidth - overRectangleWidth) / 2,
+                  width: overRectangleWidth,
+                  top: (itemHeight - overRectangleHeight) / 2 + yOffset,
+                  height: overRectangleHeight,
+                  child: TweenAnimationBuilder(
+                    tween: Tween<double>(begin: 0, end: 1),
+                    duration: Duration(milliseconds: 200),
+                    builder: (context, value, child) {
+                      return Opacity(
+                        opacity: value,
+                        child: child!,
+                      );
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: ColoredBox(
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            GestureDetector(
-              onPanStart: (details) {
-                setState(() {
-                  this.yOffset = details.localPosition.dy - itemHeight / 2;
-                });
-              },
-              onPanUpdate: (details) {
-                setState(() {
-                  this.yOffset = this.yOffset! + details.delta.dy;
-                });
-              },
-              onPanEnd: (details) {
-                setState(() {
-                  this.yOffset = null;
-                });
-              },
-              child: SizedBox(
-                width: initialWidth,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: ColoredBox(
-                    color: Colors.white.withOpacity(0.7),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: buildSeparated(
-                          DojoResponsiveActionMenu.users
-                              .mapIndexed((index, user) {
-                            final itemPosition = padding +
-                                itemHeight * index +
-                                separatorHeight * index;
-                            final yOffset = this.yOffset;
-
-                            final child = UserListTileBody(
-                              user: user,
-                              height: itemHeight,
-                            );
-
-                            if (yOffset == null) {
-                              return child;
-                            }
-
-                            // Gaussian center at 0 with a standard deviation of 1
-                            final sigmaScale = 10.0;
-
-                            final scale = 1 +
-                                2 *
-                                    gaussian(
-                                      x: itemPosition,
-                                      sigma: sigmaScale,
-                                      mu: yOffset,
-                                    );
-
-                            final sigmaDeplacement = 5.0;
-
-                            final yDeplacement =
-                                    (gaussian(
-                                      x: itemPosition,
-                                      sigma: sigmaDeplacement,
-                                      mu: yOffset - 10,
-                                    ) -
-
-                                    gaussian(
-                                      x: itemPosition,
-                                      sigma: sigmaDeplacement,
-                                      mu: yOffset + 10,
-                                    ))*10;
-
-                            print('yDeplacement: $yDeplacement, index: $index');
-
-                            return Transform.scale(
-                              scale: scale,
-                              child: Transform.translate(
-                                child: child,
-                                offset: Offset(0, yDeplacement),
-                              ),
-                            );
-                          }),
-                          separator: SizedBox(height: separatorHeight),
+              GestureDetector(
+                onPanStart: (details) {
+                  setClamppedYOffset(details.localPosition.dy - itemHeight / 2);
+                },
+                onPanUpdate: (details) {
+                  setClamppedYOffset(this.yOffset! + details.delta.dy);
+                },
+                onPanEnd: (details) {
+                  setClamppedYOffset(null);
+                },
+                child: SizedBox(
+                  width: initialWidth,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: ColoredBox(
+                      color: Colors.white.withOpacity(0.7),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: _UserTiles(
+                          padding: padding,
+                          itemHeight: itemHeight,
+                          separatorHeight: separatorHeight,
+                          yOffset: yOffset ?? 0,
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      );
-    });
+            ],
+          ),
+        );
+      }),
+    );
   }
+}
+
+class _UserTiles extends StatelessWidget {
+  const _UserTiles({
+    required this.padding,
+    required this.itemHeight,
+    required this.separatorHeight,
+    required this.yOffset,
+  });
+
+  final double padding;
+  final double itemHeight;
+  final double separatorHeight;
+  final double yOffset;
 
   double gaussian({
     required double x,
@@ -186,7 +161,55 @@ class _MyMenuState extends State<_MyMenu> {
         exp(-pow((x - mu), 2) / (2 * pow(sigma, 2)));
   }
 
-  double sigmoid(double x) {
-    return 1 / (1 + exp(-x));
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: buildSeparated(
+        DojoResponsiveActionMenu.users.mapIndexed((index, user) {
+          final itemPosition =
+              padding + itemHeight * index + separatorHeight * index;
+
+          final child = UserListTileBody(
+            user: user,
+            height: itemHeight,
+          );
+
+          final sigmaScale = 10.0;
+
+          final scale = 1 +
+              2 *
+                  gaussian(
+                    x: itemPosition,
+                    sigma: sigmaScale,
+                    mu: yOffset,
+                  );
+
+          final sigmaDeplacement = 5.0;
+
+          final yDeplacement = (gaussian(
+                    x: itemPosition,
+                    sigma: sigmaDeplacement,
+                    mu: yOffset - 10,
+                  ) -
+                  gaussian(
+                    x: itemPosition,
+                    sigma: sigmaDeplacement,
+                    mu: yOffset + 10,
+                  )) *
+              10;
+
+          return Transform.scale(
+            scale: scale,
+            child: Transform.translate(
+              child: child,
+              offset: Offset(0, yDeplacement),
+            ),
+          );
+        }),
+        separator: SizedBox(height: separatorHeight),
+      ),
+    );
   }
 }

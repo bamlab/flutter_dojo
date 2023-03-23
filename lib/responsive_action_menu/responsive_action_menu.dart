@@ -62,13 +62,13 @@ class UserListTileBody extends StatelessWidget {
         children: [
           ClipOval(
             child: Image.network(
-              'https://avatars.dicebear.com/api/adventurer-neutral/${user.fullName}.png',
+              'https://avatars.dicebear.com/api/adventurer/${user.fullName}.png',
               height: avatarSize,
               width: avatarSize,
             ),
           ),
           const SizedBox(width: 8),
-          Text(user.fullName, style: Theme.of(context).textTheme.headline6),
+          Text(user.fullName, style: Theme.of(context).textTheme.titleLarge),
         ],
       ),
     );
