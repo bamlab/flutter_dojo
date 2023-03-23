@@ -53,7 +53,6 @@ class ReflectiveCDBase extends StatelessWidget {
           ),
           bottomNavigationBar: _FakeNavigationBar(),
           body: SingleChildScrollView(
-            physics: NeverScrollableScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
