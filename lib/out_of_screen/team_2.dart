@@ -1,6 +1,7 @@
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
+import 'dart:math' as math;
 
 import 'out_of_screen.dart';
 
@@ -47,7 +48,20 @@ class _BigWidgetState extends State<_BigWidget> with TickerProviderStateMixin {
   _AnimationTargetDestination animationState =
       _AnimationTargetDestination.start;
 
-  double dragOutOfScreenCardDy = 0;
+  double dragOutOfScreenCardRawDy = 0;
+
+  double get dragOutOfScreenCardDy =>
+      dragOutOfScreenCardRawDy.sign *
+      SpringSimulation(
+        SpringDescription(
+          mass: 1.5,
+          stiffness: 200,
+          damping: 101,
+        ),
+        0.0, // starting point
+        1000, // ending point
+        20, // velocity
+      ).x(dragOutOfScreenCardRawDy.abs() / 5000);
 
   /// Used to compute the out of screen card height.
   final outOfScreenCardKey = GlobalKey();
@@ -146,13 +160,13 @@ class _BigWidgetState extends State<_BigWidget> with TickerProviderStateMixin {
 
     _outOfScreenCardController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 500),
     );
 
     _outOfScreenCardController.addListener(() {
       print(_outOfScreenCardAnimation.value);
       setState(() {
-        dragOutOfScreenCardDy = _outOfScreenCardAnimation.value;
+        dragOutOfScreenCardRawDy = _outOfScreenCardAnimation.value;
       });
     });
 
@@ -213,11 +227,9 @@ class _BigWidgetState extends State<_BigWidget> with TickerProviderStateMixin {
                   behavior: HitTestBehavior.opaque,
                   onPanUpdate: (details) {
                     setState(() {
-                      dragOutOfScreenCardDy += details.delta.dy / 2;
+                      dragOutOfScreenCardRawDy += details.delta.dy;
                     });
-                    final outOfScreenCardHeight = this.outOfScreenCardHeight;
-                    if (outOfScreenCardHeight != null &&
-                        dragOutOfScreenCardDy > outOfScreenCardHeight / 4 &&
+                    if (dragOutOfScreenCardDy > outOfScreenCardHeight! / 4 &&
                         _controller.status == AnimationStatus.completed) {
                       _runAnimation();
                     }
