@@ -23,18 +23,12 @@ class OutOfScreenTeam2 extends TeamWidget {
   }
 }
 
-enum _AnimationState {
+enum _AnimationTargetDestination {
   /// The animation is not running.
-  idleStart,
+  start,
 
   /// The animation is not running.
-  idleEnd,
-
-  /// The animation is running forward.
-  forward,
-
-  /// The animation is running backward.
-  backward,
+  end,
 }
 
 class _BigWidget extends StatefulWidget {
@@ -50,7 +44,8 @@ class _BigWidgetState extends State<_BigWidget> with TickerProviderStateMixin {
   late Animation<double> _outOfScreenCardAnimation;
 
   double get translationValue => _controller.value;
-  _AnimationState animationState = _AnimationState.idleStart;
+  _AnimationTargetDestination animationState =
+      _AnimationTargetDestination.start;
 
   double dragOutOfScreenCardDy = 0;
 
@@ -82,18 +77,13 @@ class _BigWidgetState extends State<_BigWidget> with TickerProviderStateMixin {
     );
 
     switch (animationState) {
-      case _AnimationState.idleStart:
-        animationState = _AnimationState.forward;
-        await _controller.animateWith(simulationForward);
-        animationState = _AnimationState.idleEnd;
+      case _AnimationTargetDestination.start:
+        _controller.animateWith(simulationForward);
+        animationState = _AnimationTargetDestination.end;
         break;
-      case _AnimationState.idleEnd:
-        animationState = _AnimationState.backward;
-        await _controller.animateWith(simulationBackward);
-        animationState = _AnimationState.idleStart;
-        break;
-      case _AnimationState.forward:
-      case _AnimationState.backward:
+      case _AnimationTargetDestination.end:
+        _controller.animateWith(simulationBackward);
+        animationState = _AnimationTargetDestination.start;
         break;
     }
   }
