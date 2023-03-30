@@ -44,9 +44,10 @@ class _BigWidget extends StatefulWidget {
   State<_BigWidget> createState() => _BigWidgetState();
 }
 
-class _BigWidgetState extends State<_BigWidget>
-    with SingleTickerProviderStateMixin {
+class _BigWidgetState extends State<_BigWidget> with TickerProviderStateMixin {
   late AnimationController _controller;
+  late AnimationController _outOfScreenCardController;
+  late Animation<double> _outOfScreenCardAnimation;
 
   double get translationValue => _controller.value;
   _AnimationState animationState = _AnimationState.idleStart;
@@ -97,6 +98,31 @@ class _BigWidgetState extends State<_BigWidget>
     }
   }
 
+  void _runOutOfScreenAnimation(Offset pixelsPerSecond, Size size) {
+    _outOfScreenCardAnimation = _outOfScreenCardController.drive(
+      Tween<double>(
+        begin: dragOutOfScreenCardDy,
+        end: 0,
+      ),
+    );
+    // Calculate the velocity relative to the unit interval, [0,1],
+    // used by the animation controller.
+    final unitsPerSecondX = pixelsPerSecond.dx / size.width;
+    final unitsPerSecondY = pixelsPerSecond.dy / size.height;
+    final unitsPerSecond = Offset(unitsPerSecondX, unitsPerSecondY);
+    final unitVelocity = unitsPerSecond.distance;
+
+    const spring = SpringDescription(
+      mass: 30,
+      stiffness: 1,
+      damping: 1,
+    );
+
+    final simulation = SpringSimulation(spring, 0, 1, -unitVelocity);
+
+    _outOfScreenCardController.animateWith(simulation);
+  }
+
   Matrix4 _getCurrentTransformMatrix() {
     // We can only start translating after the first frame because we need the
     // height of the out of screen card.
@@ -128,6 +154,18 @@ class _BigWidgetState extends State<_BigWidget>
 
     _controller.addListener(() => setState(() {}));
 
+    _outOfScreenCardController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
+    _outOfScreenCardController.addListener(() {
+      print(_outOfScreenCardAnimation.value);
+      setState(() {
+        dragOutOfScreenCardDy = _outOfScreenCardAnimation.value;
+      });
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         final context = outOfScreenCardKey.currentContext!;
@@ -139,6 +177,7 @@ class _BigWidgetState extends State<_BigWidget>
   @override
   void dispose() {
     _controller.dispose();
+    _outOfScreenCardController.dispose();
     super.dispose();
   }
 
@@ -186,7 +225,12 @@ class _BigWidgetState extends State<_BigWidget>
                     setState(() {
                       dragOutOfScreenCardDy += details.delta.dy / 2;
                     });
-                    print(dragOutOfScreenCardDy);
+                  },
+                  onPanEnd: (details) {
+                    _runOutOfScreenAnimation(
+                      details.velocity.pixelsPerSecond,
+                      screenSize,
+                    );
                   },
                   child: KeyedSubtree(
                     key: outOfScreenCardKey,
