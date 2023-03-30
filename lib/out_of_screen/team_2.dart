@@ -215,6 +215,13 @@ class _BigWidgetState extends State<_BigWidget> with TickerProviderStateMixin {
                     setState(() {
                       dragOutOfScreenCardDy += details.delta.dy / 2;
                     });
+                    final outOfScreenCardHeight = this.outOfScreenCardHeight;
+                    if (outOfScreenCardHeight != null &&
+                        dragOutOfScreenCardDy > outOfScreenCardHeight / 4 &&
+                        _controller.status == AnimationStatus.completed) {
+                      _runAnimation();
+                    }
+                    print(dragOutOfScreenCardDy);
                   },
                   onPanEnd: (details) {
                     _runOutOfScreenAnimation(
