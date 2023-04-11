@@ -1,7 +1,6 @@
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
-import 'dart:math' as math;
 
 import 'out_of_screen.dart';
 
@@ -164,7 +163,6 @@ class _BigWidgetState extends State<_BigWidget> with TickerProviderStateMixin {
     );
 
     _outOfScreenCardController.addListener(() {
-      print(_outOfScreenCardAnimation.value);
       setState(() {
         dragOutOfScreenCardRawDy = _outOfScreenCardAnimation.value;
       });
@@ -233,8 +231,8 @@ class _BigWidgetState extends State<_BigWidget> with TickerProviderStateMixin {
                         _controller.status == AnimationStatus.completed) {
                       _runAnimation();
                     }
-                    print(dragOutOfScreenCardDy);
                   },
+                  onPanDown: (_) => _outOfScreenCardController.stop(),
                   onPanEnd: (details) {
                     _runOutOfScreenAnimation(
                       details.velocity.pixelsPerSecond,
