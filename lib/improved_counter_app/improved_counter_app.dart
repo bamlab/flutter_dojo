@@ -11,13 +11,13 @@ import 'team_3.dart';
 // Design: https://twitter.com/philipcdavis/status/1550133881168269312
 
 final _teams = <TeamMixin>[
-  const RefreshPlusTeam1(),
-  const RefreshPlusTeam2(),
-  const RefreshPlusTeam3(),
+  const ImprovedCounterAppTeam1(),
+  const ImprovedCounterAppTeam2(),
+  const ImprovedCounterAppTeam3(),
 ];
 
-class DojoRefreshPlus extends DojoWidget {
-  DojoRefreshPlus({
+class DojoImprovedCounterApp extends DojoWidget {
+  DojoImprovedCounterApp({
     Key? key,
-  }) : super(key: key, dojoName: 'RefreshPlus', teams: _teams);
+  }) : super(key: key, dojoName: 'ImprovedCounterApp', teams: _teams);
 }

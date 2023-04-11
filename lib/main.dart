@@ -23,7 +23,7 @@ import 'package:bam_dojo/page_color_transition/page_color_transition.dart';
 import 'package:bam_dojo/physics/physics.dart';
 import 'package:bam_dojo/pulsating_cubes/pulsating_cubes.dart';
 import 'package:bam_dojo/reflective_cd/reflective_cd.dart';
-import 'package:bam_dojo/refresh_plus/refresh_plus.dart';
+import 'package:bam_dojo/refresh_plus/improved_counter_app.dart';
 import 'package:bam_dojo/rippling_wave/rippling_wave.dart';
 import 'package:bam_dojo/rolling_counter/rolling_counter.dart';
 import 'package:bam_dojo/scroll_progress/scroll_progress.dart';
@@ -114,7 +114,7 @@ final _dojos = <DojoWidget>[
   DojoRipplingWave(),
   DojoOutOfScreen(),
   DojoReflectiveCD(),
-  DojoRefreshPlus(),
+  DojoImprovedCounterApp(),
   DojoIconMorph(),
 ];
 

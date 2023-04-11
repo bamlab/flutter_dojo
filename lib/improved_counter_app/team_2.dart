@@ -1,10 +1,10 @@
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:flutter/material.dart';
 
-class RefreshPlusTeam3 extends TeamWidget {
-  const RefreshPlusTeam3({
+class ImprovedCounterAppTeam2 extends TeamWidget {
+  const ImprovedCounterAppTeam2({
     Key? key,
-  }) : super(key: key, teamName: 'Team3');
+  }) : super(key: key, teamName: 'Team2');
 
   @override
   Widget build(BuildContext context) {
