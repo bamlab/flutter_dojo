@@ -65,7 +65,7 @@ class _AnimatedCirclesState extends State<_AnimatedCircles>
                       1, 0, 0, 0, 0, //
                       0, 1, 0, 0, 0, //
                       0, 0, 1, 0, 0, //
-                      0, 0, 0, 255, 0, //
+                      0, 0, 0, 10000, 0, //
                     ],
                   ),
                   child: ColorFiltered(
