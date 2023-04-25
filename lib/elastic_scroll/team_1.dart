@@ -1,9 +1,10 @@
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:faker/faker.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 const baseDividerHeight = 8;
-final name = faker.person.name();
+final names = List.generate(20, (_) => faker.person.name());
 
 class ElasticScrollTeam1 extends StatefulWidget with TeamMixin {
   final teamName = 'Team1';
@@ -28,21 +29,22 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   late final scrollController = ScrollController();
-  var scrollOffset = 0.0;
+  var scrollUpOffset = 0.0;
   var maxScrollOffset = 0.0;
-  var scrollYOffeset = 0.0;
+  var scrollDownOffset = 0.0;
 
   @override
   void initState() {
     scrollController.addListener(() {
       setState(() {
-        scrollOffset = scrollController.offset;
+        scrollUpOffset =
+            scrollController.offset < 0 ? scrollController.offset * (-0.3) : 0;
         maxScrollOffset = maxScrollOffset == 0.0
             ? scrollController.position.maxScrollExtent
             : maxScrollOffset;
-        scrollYOffeset = maxScrollOffset - scrollOffset;
-        print(scrollOffset);
-        print(maxScrollOffset);
+        scrollDownOffset = scrollController.offset > maxScrollOffset
+            ? (scrollController.offset - maxScrollOffset) * 0.3
+            : 0;
       });
     });
     super.initState();
@@ -72,33 +74,27 @@ class _MainPageState extends State<MainPage> {
                     'Messages',
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
-                  SizedBox(
-                    height: baseDividerHeight -
-                        (scrollOffset < 0 ? scrollOffset * 0.3 / 2 : 0),
-                  ),
                 ],
               ),
             ),
             ...[
               for (var i = 0; i < 20; i++)
                 () {
-                  return Column(
-                    children: [
-                      SizedBox(
-                        height:
-                            0 + (scrollYOffeset < 0 ? scrollYOffeset * 0.3 : 0),
-                      ),
-                      Message(
-                        name: name,
-                        avatarUrl:
-                            'https://avatars.dicebear.com/api/adventurer/$name.png',
-                        message: 'Hello there!',
-                      ),
-                      SizedBox(
-                        height: baseDividerHeight -
-                            (scrollOffset < 0 ? scrollOffset * 0.3 : 0),
-                      ),
-                    ],
+                  return Transform.translate(
+                    offset: Offset(0, -scrollDownOffset * (20 - i)),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: baseDividerHeight + scrollUpOffset,
+                        ),
+                        Message(
+                          name: names[i],
+                          avatarUrl:
+                              'https://avatars.dicebear.com/api/adventurer/${names[i]}.png',
+                          message: 'Hello there!',
+                        ),
+                      ],
+                    ),
                   );
                 }()
             ]
