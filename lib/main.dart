@@ -12,6 +12,7 @@ import 'package:bam_dojo/card_hover/card_hover.dart';
 import 'package:bam_dojo/card_shredder/card_shredder.dart';
 import 'package:bam_dojo/cloth/cloth.dart';
 import 'package:bam_dojo/drag_this/drag_this.dart';
+import 'package:bam_dojo/elastic_scroll/elastic_scroll.dart';
 import 'package:bam_dojo/haptic/haptic.dart';
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:bam_dojo/hero_list/hero_list.dart';
@@ -118,6 +119,7 @@ final _dojos = <DojoWidget>[
   DojoImprovedCounterApp(),
   DojoIconMorph(),
   DojoDropdownPicker(),
+  DojoElasticScroll(),
 ];
 
 class DojoPicker extends StatelessWidget {
