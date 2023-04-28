@@ -1,9 +1,10 @@
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:collection/collection.dart';
 import 'package:faker/faker.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-const baseDividerHeight = 8;
+const baseDividerHeight = 8.0;
 final names = List.generate(20, (_) => faker.person.name());
 
 class ElasticScrollTeam1 extends StatefulWidget with TeamMixin {
@@ -64,38 +65,48 @@ class _MainPageState extends State<MainPage> {
       color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(24),
-        child: ListView(
-          controller: scrollController,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Messages',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                ],
+        child: ScrollConfiguration(
+          behavior: ScrollConfiguration.of(context).copyWith(dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.mouse,
+          }),
+          child: ListView(
+            physics: const BouncingScrollPhysics(),
+            controller: scrollController,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Messages',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            ...names.mapIndexed((index, name) => Transform.translate(
-                  offset: Offset(0, -scrollDownOffset * (20 - index)),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: baseDividerHeight + scrollUpOffset,
-                      ),
-                      Message(
-                        name: name,
-                        avatarUrl:
-                            'https://avatars.dicebear.com/api/adventurer/$name.png',
-                        message: 'Hello there!',
-                      ),
-                    ],
-                  ),
-                ))
-          ],
+              ...names.mapIndexed((index, name) => Transform.translate(
+                    offset: Offset(
+                        0,
+                        scrollUpOffset * index -
+                            scrollDownOffset * (names.length - index)),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: baseDividerHeight,
+                        ),
+                        Message(
+                          name: name,
+                          avatarUrl:
+                              'https://avatars.dicebear.com/api/adventurer/$name.png',
+                          message: 'Hello there!',
+                        ),
+                      ],
+                    ),
+                  ))
+            ],
+          ),
         ),
       ),
     );
