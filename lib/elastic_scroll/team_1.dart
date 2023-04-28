@@ -1,6 +1,6 @@
 import 'package:bam_dojo/helpers/team_class.dart';
+import 'package:collection/collection.dart';
 import 'package:faker/faker.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 const baseDividerHeight = 8;
@@ -35,13 +35,15 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        maxScrollOffset = scrollController.position.maxScrollExtent;
+      });
+    });
     scrollController.addListener(() {
       setState(() {
         scrollUpOffset =
             scrollController.offset < 0 ? scrollController.offset * (-0.3) : 0;
-        maxScrollOffset = maxScrollOffset == 0.0
-            ? scrollController.position.maxScrollExtent
-            : maxScrollOffset;
         scrollDownOffset = scrollController.offset > maxScrollOffset
             ? (scrollController.offset - maxScrollOffset) * 0.3
             : 0;
@@ -77,27 +79,22 @@ class _MainPageState extends State<MainPage> {
                 ],
               ),
             ),
-            ...[
-              for (var i = 0; i < 20; i++)
-                () {
-                  return Transform.translate(
-                    offset: Offset(0, -scrollDownOffset * (20 - i)),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: baseDividerHeight + scrollUpOffset,
-                        ),
-                        Message(
-                          name: names[i],
-                          avatarUrl:
-                              'https://avatars.dicebear.com/api/adventurer/${names[i]}.png',
-                          message: 'Hello there!',
-                        ),
-                      ],
-                    ),
-                  );
-                }()
-            ]
+            ...names.mapIndexed((index, name) => Transform.translate(
+                  offset: Offset(0, -scrollDownOffset * (20 - index)),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: baseDividerHeight + scrollUpOffset,
+                      ),
+                      Message(
+                        name: name,
+                        avatarUrl:
+                            'https://avatars.dicebear.com/api/adventurer/$name.png',
+                        message: 'Hello there!',
+                      ),
+                    ],
+                  ),
+                ))
           ],
         ),
       ),
