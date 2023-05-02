@@ -13,7 +13,12 @@ class _RipplingWaveTeam3State extends State<RipplingWaveTeam3> {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.black,
-      child: Container(),
+      child: GridView.builder(
+          gridDelegate:
+              SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 20),
+          itemBuilder: (_, __) => DecoratedBox(
+                decoration: BoxDecoration(shape: BoxShape.circle),
+              )),
     );
   }
 }
