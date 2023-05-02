@@ -12,7 +12,7 @@ class _RipplingWaveTeam1State extends State<RipplingWaveTeam1> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: Colors.black,
       child: Container(),
     );
   }
