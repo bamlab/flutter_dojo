@@ -1,5 +1,5 @@
 import 'package:bam_dojo/helpers/team_class.dart';
-import 'package:bam_dojo/hero_list/team_1.dart';
+import 'package:bam_dojo/icon_morph/filtered_blur_widget.dart';
 import 'package:flutter/material.dart';
 
 class IconMorphTeam3 extends TeamWidget {
@@ -27,7 +27,7 @@ class _IconsSelectorState extends State<_IconsSelector>
     Icons.add_a_photo,
     Icons.add_alert,
     Icons.add_box,
-    Icons.percent_outlined,
+    Icons.pause_rounded,
     Icons.person,
     Icons.hourglass_bottom,
     Icons.hourglass_top,
@@ -36,11 +36,11 @@ class _IconsSelectorState extends State<_IconsSelector>
   late var _selectedIcon = _selectableIcons.first;
   IconData? _previouslySelectedIcon;
 
-  final animationDuration = Duration(milliseconds: 1000);
+  final animationDuration = Duration(milliseconds: 500);
 
   late final blurAnimationController = AnimationController(
     vsync: this,
-    duration: animationDuration,
+    duration: Duration(milliseconds: (animationDuration.inMilliseconds) ~/ 4),
   );
 
   @override
@@ -57,8 +57,6 @@ class _IconsSelectorState extends State<_IconsSelector>
       icon: icon,
       selected: _selectedIcon == icon,
       onTap: () async {
-        await blurAnimationController.forward();
-
         if (mounted) {
           setState(() {
             _previouslySelectedIcon = _selectedIcon;
@@ -66,11 +64,11 @@ class _IconsSelectorState extends State<_IconsSelector>
           });
         }
 
-        // Wait for the morph
-        await animationDuration;
+        await blurAnimationController.forward();
 
+        await Duration(milliseconds: animationDuration.inMilliseconds ~/ 2);
         // unblur
-        await blurAnimationController.reverse();
+        blurAnimationController.reverse();
       },
     );
   }
@@ -87,56 +85,36 @@ class _IconsSelectorState extends State<_IconsSelector>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ColorFiltered(
-              colorFilter: ColorFilter.matrix(
-                [
-                  1, 0, 0, 0, 0, //
-                  0, 1, 0, 0, 0, //
-                  0, 0, 1, 0, 0, //
-                  0, 0, 0, 255, 0, //
-                ],
-              ),
-              child: ColorFiltered(
-                colorFilter: ColorFilter.matrix(
-                  [
-                    1, 0, 0, 0, 0, //
-                    0, 1, 0, 0, 0, //
-                    0, 0, 1, 0, 0, //
-                    0, 0, 0, 1, -255 / 2, //
-                  ],
-                ),
-                child: BlurredWidget(
-                  blur: blurAnimationController.value * 10,
-                  child: Stack(
-                    children: [
-                      if (previouslySelectedIcon != null)
-                        TweenAnimationBuilder(
-                          key: ValueKey(previouslySelectedIcon),
-                          duration: animationDuration,
-                          tween: Tween<double>(begin: 1, end: 0),
-                          builder: (context, value, child) {
-                            return Opacity(
-                              opacity: value,
-                              child: child,
-                            );
-                          },
-                          child: Icon(previouslySelectedIcon, size: 100),
-                        ),
-                      TweenAnimationBuilder(
-                        key: ValueKey(_selectedIcon),
-                        duration: animationDuration,
-                        tween: Tween<double>(begin: 0, end: 1),
-                        builder: (context, value, child) {
-                          return Opacity(
-                            opacity: value,
-                            child: child,
-                          );
-                        },
-                        child: Icon(_selectedIcon, size: 100),
-                      ),
-                    ],
+            FilteredBlur(
+              blur: blurAnimationController.value,
+              child: Stack(
+                children: [
+                  if (previouslySelectedIcon != null)
+                    TweenAnimationBuilder(
+                      key: ValueKey(previouslySelectedIcon),
+                      duration: animationDuration,
+                      tween: Tween<double>(begin: 1, end: 0),
+                      builder: (context, value, child) {
+                        return Opacity(
+                          opacity: value,
+                          child: child,
+                        );
+                      },
+                      child: Icon(previouslySelectedIcon, size: 100),
+                    ),
+                  TweenAnimationBuilder(
+                    key: ValueKey(_selectedIcon),
+                    duration: animationDuration,
+                    tween: Tween<double>(begin: 0, end: 1),
+                    builder: (context, value, child) {
+                      return Transform.scale(
+                        scale: value,
+                        child: child,
+                      );
+                    },
+                    child: Icon(_selectedIcon, size: 100),
                   ),
-                ),
+                ],
               ),
             ),
             SizedBox(height: 40),

@@ -1,4 +1,5 @@
 import 'package:bam_dojo/helpers/team_class.dart';
+import 'package:bam_dojo/icon_morph/filtered_blur_widget.dart';
 import 'package:flutter/material.dart';
 
 class IconMorphTeam2 extends TeamWidget {
@@ -19,13 +20,13 @@ class _IconsSelector extends StatefulWidget {
 
 class _IconsSelectorState extends State<_IconsSelector> {
   final _selectableIcons = [
-    Icons.ac_unit,
-    Icons.access_time,
+    Icons.square,
+    Icons.circle,
     Icons.add,
     Icons.add_a_photo,
     Icons.add_alert,
     Icons.add_box,
-    Icons.percent_outlined,
+    Icons.pause,
     Icons.person,
     Icons.hourglass_bottom,
     Icons.hourglass_top,
@@ -52,7 +53,15 @@ class _IconsSelectorState extends State<_IconsSelector> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(_selectedIcon, size: 100),
+            AnimatedSwitcher(
+                switchInCurve: Curves.fastLinearToSlowEaseIn,
+                switchOutCurve: Curves.easeIn,
+                duration: Duration(milliseconds: 500),
+                transitionBuilder: (child, animation) => FilteredBlur(
+                    blur: animation.value * 10,
+                    child: ScaleTransition(scale: animation, child: child)),
+                child: Icon(
+                    key: ValueKey(_selectedIcon), _selectedIcon, size: 100)),
             SizedBox(height: 40),
             GridView(
               padding: EdgeInsets.all(10),
