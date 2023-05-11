@@ -1,4 +1,5 @@
 import 'package:bam_dojo/helpers/team_class.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 class DropdownPickerTeam3 extends StatefulWidget with TeamMixin {
@@ -49,14 +50,14 @@ class Scroller extends StatefulWidget {
 }
 
 class _ScrollerState extends State<Scroller> {
-  late var _selectedItem = items.first;
+  late var _selectedIndex = 0;
   var isExpanded = true;
 
   @override
   Widget build(BuildContext context) {
     final translationToTop = itemHeight * (items.length / 2 - 1 / 2);
     final translationToCurrentItem =
-        translationToTop - itemHeight * items.indexOf(_selectedItem);
+        translationToTop - itemHeight * _selectedIndex;
 
     final totalHeight = itemHeight * items.length;
 
@@ -80,36 +81,40 @@ class _ScrollerState extends State<Scroller> {
             end: isExpanded ? totalHeight : itemHeight,
           ),
           builder: (context, translationValue, child) {
-            return Stack(
-              clipBehavior: Clip.antiAlias,
-              children: [
-                AnimatedContainer(
-                  duration: Duration(milliseconds: animationDuration),
+            print(translationValue);
+            return ColoredBox(
+              color: Colors.red,
+              child: ClipRect(
+                clipper: _PickerClipper(
+                  selectedIndex: _selectedIndex,
+                  translationToTop: translationToTop,
+                  isExpanded: isExpanded,
+                ),
+                child: SizedBox(
                   height: translationValue,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
+                  child: OverflowBox(
+                    alignment: Alignment(0, 2 / 3 * _selectedIndex - 1),
+                    maxHeight: totalHeight,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: items
+                          .mapIndexed(
+                            (index, item) => _PickerItem(
+                              title: item,
+                              height: itemHeight,
+                              onTap: () {
+                                setState(() {
+                                  _selectedIndex = index;
+                                  isExpanded = !isExpanded;
+                                });
+                              },
+                            ),
+                          )
+                          .toList(),
+                    ),
                   ),
-                  child: child,
                 ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: items
-                      .map(
-                        (item) => _PickerItem(
-                          title: item,
-                          height: itemHeight,
-                          onTap: () {
-                            setState(() {
-                              _selectedItem = item;
-                              isExpanded = !isExpanded;
-                            });
-                          },
-                        ),
-                      )
-                      .toList(),
-                ),
-              ],
+              ),
             );
           },
           child: OverflowBox(
@@ -145,5 +150,32 @@ class _PickerItem extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _PickerClipper extends CustomClipper<Rect> {
+  final int selectedIndex;
+  final double translationToTop;
+  final bool isExpanded;
+
+  _PickerClipper({
+    required this.selectedIndex,
+    required this.translationToTop,
+    required this.isExpanded,
+  });
+
+  @override
+  Rect getClip(Size size) {
+    final offset = Offset(
+      0,
+      isExpanded ? 0 : -translationToTop + selectedIndex * itemHeight,
+    );
+
+    return offset & size;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Rect> oldClipper) {
+    return true;
   }
 }
