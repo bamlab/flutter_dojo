@@ -10,24 +10,24 @@ class DropdownPickerTeam3 extends StatefulWidget with TeamMixin {
 }
 
 const animationDuration = 300;
+const itemWidth = 200.0;
 const itemHeight = 50.0;
 const items = ['Easy', 'Medium', 'Hard', 'Expert'];
 
 class _DropdownPickerTeam3State extends State<DropdownPickerTeam3> {
   @override
   Widget build(BuildContext context) {
-    final totalHeight = itemHeight * items.length;
-
     return Material(
       color: Colors.black,
       child: Stack(
+        alignment: Alignment.center,
         clipBehavior: Clip.none,
         children: [
           Positioned.fill(
             child: Center(
               child: Container(
                 color: Colors.blueGrey,
-                width: totalHeight,
+                width: itemWidth,
                 height: itemHeight,
               ),
             ),
@@ -59,8 +59,6 @@ class _ScrollerState extends State<Scroller> {
     final translationToCurrentItem =
         translationToTop - itemHeight * _selectedIndex;
 
-    final totalHeight = itemHeight * items.length;
-
     return Center(
       child: TweenAnimationBuilder(
         duration: Duration(milliseconds: animationDuration),
@@ -74,52 +72,28 @@ class _ScrollerState extends State<Scroller> {
             child: child,
           );
         },
-        child: TweenAnimationBuilder(
-          duration: Duration(milliseconds: animationDuration),
-          tween: Tween<double>(
-            begin: 0,
-            end: isExpanded ? totalHeight : itemHeight,
+        child: ClipRect(
+          clipper: _PickerClipper(
+            selectedIndex: _selectedIndex,
+            translationToTop: translationToTop,
+            isExpanded: isExpanded,
           ),
-          builder: (context, translationValue, child) {
-            print(translationValue);
-            return ColoredBox(
-              color: Colors.red,
-              child: ClipRect(
-                clipper: _PickerClipper(
-                  selectedIndex: _selectedIndex,
-                  translationToTop: translationToTop,
-                  isExpanded: isExpanded,
-                ),
-                child: SizedBox(
-                  height: translationValue,
-                  child: OverflowBox(
-                    alignment: Alignment(0, 2 / 3 * _selectedIndex - 1),
-                    maxHeight: totalHeight,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: items
-                          .mapIndexed(
-                            (index, item) => _PickerItem(
-                              title: item,
-                              height: itemHeight,
-                              onTap: () {
-                                setState(() {
-                                  _selectedIndex = index;
-                                  isExpanded = !isExpanded;
-                                });
-                              },
-                            ),
-                          )
-                          .toList(),
-                    ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: items
+                .mapIndexed(
+                  (index, item) => _PickerItem(
+                    title: item,
+                    height: itemHeight,
+                    onTap: () {
+                      setState(() {
+                        _selectedIndex = index;
+                        isExpanded = !isExpanded;
+                      });
+                    },
                   ),
-                ),
-              ),
-            );
-          },
-          child: OverflowBox(
-            maxHeight: double.infinity,
-            child: SizedBox(),
+                )
+                .toList(),
           ),
         ),
       ),
@@ -167,11 +141,13 @@ class _PickerClipper extends CustomClipper<Rect> {
   @override
   Rect getClip(Size size) {
     final offset = Offset(
-      0,
-      isExpanded ? 0 : -translationToTop + selectedIndex * itemHeight,
+      (size.width - itemWidth) / 2,
+      isExpanded ? 0 : selectedIndex * itemHeight,
     );
 
-    return offset & size;
+    final correctedSize = isExpanded ? size : Size(200, itemHeight);
+
+    return offset & correctedSize;
   }
 
   @override
