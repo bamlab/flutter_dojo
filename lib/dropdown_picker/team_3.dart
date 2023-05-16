@@ -1,4 +1,5 @@
 import 'package:bam_dojo/helpers/team_class.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 class DropdownPickerTeam3 extends StatefulWidget with TeamMixin {
@@ -8,71 +9,90 @@ class DropdownPickerTeam3 extends StatefulWidget with TeamMixin {
   State<DropdownPickerTeam3> createState() => _DropdownPickerTeam3State();
 }
 
-class _DropdownPickerTeam3State extends State<DropdownPickerTeam3> {
-  final items = ['Easy', 'Medium', 'Hard', 'Expert'];
+const animationDuration = 200;
+const itemWidth = 200.0;
+const itemHeight = 50.0;
+const items = ['Easy', 'Medium', 'Hard', 'Expert'];
 
-  late var _selectedItem = items.first;
+class _DropdownPickerTeam3State extends State<DropdownPickerTeam3> {
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.black,
+      child: Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
+        children: [
+          Positioned.fill(
+            child: Center(
+              child: Container(
+                color: Colors.blueGrey,
+                width: itemWidth,
+                height: itemHeight,
+              ),
+            ),
+          ),
+          Scroller(
+            child: SizedBox(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class Scroller extends StatefulWidget {
+  const Scroller({super.key, required this.child});
+  final Widget child;
+
+  @override
+  State<Scroller> createState() => _ScrollerState();
+}
+
+class _ScrollerState extends State<Scroller> {
+  late var _selectedIndex = 0;
   var isExpanded = true;
-  final itemHeight = 50.0;
 
   @override
   Widget build(BuildContext context) {
     final translationToTop = itemHeight * (items.length / 2 - 1 / 2);
     final translationToCurrentItem =
-        translationToTop - itemHeight * items.indexOf(_selectedItem);
+        translationToTop - itemHeight * _selectedIndex;
 
-    final totalHeight = itemHeight * items.length;
-
-    return Material(
-      color: Colors.black,
-      child: Center(
-        child: TweenAnimationBuilder(
-          duration: const Duration(milliseconds: 300),
-          tween: Tween<double>(
-            begin: 0,
-            end: isExpanded ? translationToCurrentItem : 0,
+    return Center(
+      child: TweenAnimationBuilder(
+        duration: Duration(milliseconds: animationDuration),
+        tween: Tween<double>(
+          begin: translationToCurrentItem,
+          end: translationToCurrentItem,
+        ),
+        builder: (context, translationValue, child) {
+          return Transform.translate(
+            offset: Offset(0, translationValue),
+            child: child,
+          );
+        },
+        child: ClipRect(
+          clipper: _PickerClipper(
+            selectedIndex: _selectedIndex,
+            isExpanded: isExpanded,
           ),
-          builder: (context, translationValue, child) {
-            return Transform.translate(
-              offset: Offset(0, translationValue),
-              child: child,
-            );
-          },
-          child: SizedBox(
-            width: totalHeight,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              height: isExpanded ? totalHeight : itemHeight,
-              clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: OverflowBox(
-                alignment: Alignment(
-                  0,
-                  2 / 3 * items.indexOf(_selectedItem) - 1,
-                ),
-                maxHeight: double.infinity,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: items
-                      .map(
-                        (item) => _PickerItem(
-                          title: item,
-                          height: itemHeight,
-                          isSelected: item == _selectedItem,
-                          onTap: () {
-                            setState(() {
-                              _selectedItem = item;
-                              isExpanded = !isExpanded;
-                            });
-                          },
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: items
+                .mapIndexed(
+                  (index, item) => _PickerItem(
+                    title: item,
+                    height: itemHeight,
+                    onTap: () {
+                      setState(() {
+                        _selectedIndex = index;
+                        isExpanded = !isExpanded;
+                      });
+                    },
+                  ),
+                )
+                .toList(),
           ),
         ),
       ),
@@ -84,26 +104,51 @@ class _PickerItem extends StatelessWidget {
   _PickerItem({
     required this.title,
     required this.height,
-    required this.isSelected,
     required this.onTap,
   });
 
   final String title;
   final double height;
-  final bool isSelected;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(
         height: height,
-        color: isSelected ? Colors.blueGrey : Colors.grey,
         child: Center(
-          child: Text(title),
+          child: Text(title, style: TextStyle(color: Colors.white)),
         ),
       ),
     );
+  }
+}
+
+class _PickerClipper extends CustomClipper<Rect> {
+  final int selectedIndex;
+  final bool isExpanded;
+
+  _PickerClipper({
+    required this.selectedIndex,
+    required this.isExpanded,
+  });
+
+  @override
+  Rect getClip(Size size) {
+    final offset = Offset(
+      (size.width - itemWidth) / 2,
+      isExpanded ? 0 : selectedIndex * itemHeight,
+    );
+
+    final correctedSize = isExpanded ? size : Size(200, itemHeight);
+
+    return offset & correctedSize;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Rect> oldClipper) {
+    return true;
   }
 }
