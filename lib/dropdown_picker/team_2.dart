@@ -32,24 +32,21 @@ class _DropdownPickerTeam2State extends State<DropdownPickerTeam2> {
               ),
             ),
           ),
-          Scroller(
-            child: SizedBox(),
-          ),
+          _Picker(),
         ],
       ),
     );
   }
 }
 
-class Scroller extends StatefulWidget {
-  const Scroller({super.key, required this.child});
-  final Widget child;
+class _Picker extends StatefulWidget {
+  const _Picker();
 
   @override
-  State<Scroller> createState() => _ScrollerState();
+  State<_Picker> createState() => _PickerState();
 }
 
-class _ScrollerState extends State<Scroller> {
+class _PickerState extends State<_Picker> {
   late var _selectedIndex = 0;
   var isExpanded = true;
 
