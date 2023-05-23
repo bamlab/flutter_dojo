@@ -9,7 +9,9 @@ class DropdownPickerTeam1 extends StatefulWidget with TeamMixin {
   State<DropdownPickerTeam1> createState() => _DropdownPickerTeam1State();
 }
 
-const animationDuration = 200;
+const translationAnimationDuration = Duration(milliseconds: 700);
+const cropAnimationDuration = Duration(seconds: 1);
+
 const itemWidth = 200.0;
 const itemHeight = 50.0;
 const items = const ['Easy', 'Medium', 'Hard', 'Expert'];
@@ -27,7 +29,7 @@ class _DropdownPickerTeam1State extends State<DropdownPickerTeam1> {
           Positioned.fill(
             child: Center(
               child: Container(
-                color: Colors.blueGrey,
+                //color: Colors.blueGrey,
                 width: itemWidth,
                 height: itemHeight,
               ),
@@ -59,7 +61,7 @@ class _PickerState extends State<_Picker> {
 
     return Center(
       child: TweenAnimationBuilder(
-        duration: Duration(milliseconds: animationDuration),
+        duration: translationAnimationDuration,
         tween: Tween<double>(
           begin: translationToCurrentItem,
           end: translationToCurrentItem,
@@ -68,14 +70,16 @@ class _PickerState extends State<_Picker> {
           return Transform.translate(
             offset: Offset(0, translationValue),
             child: TweenAnimationBuilder(
-              duration: Duration(milliseconds: animationDuration),
+              curve: CustomCurve(),
+              duration: cropAnimationDuration,
               tween: Tween<double>(
                 begin: isExpanded ? itemHeight * _selectedIndex : 0,
                 end: isExpanded ? 0 : itemHeight * _selectedIndex,
               ),
               builder: (context, clipOffset, child) {
                 return TweenAnimationBuilder(
-                  duration: Duration(milliseconds: animationDuration),
+                  curve: CustomCurve(),
+                  duration: cropAnimationDuration,
                   tween: Tween(
                     begin: isExpanded ? itemHeight : totalHeight,
                     end: isExpanded ? totalHeight : itemHeight,
@@ -170,5 +174,11 @@ class _PickerClipper extends CustomClipper<Rect> {
   @override
   bool shouldReclip(covariant CustomClipper<Rect> oldClipper) {
     return true;
+  }
+}
+
+class CustomCurve extends Curve {
+  double transformInternal(double t) {
+    return -1.8641 * t * t + t * 2.78683 + 0.0010502;
   }
 }
