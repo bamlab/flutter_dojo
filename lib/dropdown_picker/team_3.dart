@@ -12,7 +12,8 @@ class DropdownPickerTeam3 extends StatefulWidget with TeamMixin {
 const animationDuration = 200;
 const itemWidth = 200.0;
 const itemHeight = 50.0;
-const items = ['Easy', 'Medium', 'Hard', 'Expert'];
+const items = const ['Easy', 'Medium', 'Hard', 'Expert'];
+final totalHeight = itemHeight * items.length;
 
 class _DropdownPickerTeam3State extends State<DropdownPickerTeam3> {
   @override
@@ -48,7 +49,7 @@ class _Picker extends StatefulWidget {
 
 class _PickerState extends State<_Picker> {
   late var _selectedIndex = 0;
-  var isExpanded = true;
+  var isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -66,32 +67,53 @@ class _PickerState extends State<_Picker> {
         builder: (context, translationValue, child) {
           return Transform.translate(
             offset: Offset(0, translationValue),
-            child: child,
+            child: TweenAnimationBuilder(
+              duration: Duration(milliseconds: animationDuration),
+              tween: Tween<double>(
+                begin: isExpanded ? itemHeight * _selectedIndex : 0,
+                end: isExpanded ? 0 : itemHeight * _selectedIndex,
+              ),
+              builder: (context, clipOffset, child) {
+                return TweenAnimationBuilder(
+                  duration: Duration(milliseconds: animationDuration),
+                  tween: Tween(
+                    begin: isExpanded ? itemHeight : totalHeight,
+                    end: isExpanded ? totalHeight : itemHeight,
+                  ),
+                  builder: (context, clipValue, child) {
+                    return ClipRect(
+                      clipper: _PickerClipper(
+                        clipHeight: clipValue,
+                        clipOffset: clipOffset,
+                      ),
+                      child: child,
+                    );
+                  },
+                  child: ColoredBox(
+                    color: Colors.grey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: items
+                          .mapIndexed(
+                            (index, item) => _PickerItem(
+                              title: item,
+                              height: itemHeight,
+                              onTap: () {
+                                setState(() {
+                                  _selectedIndex = index;
+                                  isExpanded = !isExpanded;
+                                });
+                              },
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                );
+              },
+            ),
           );
         },
-        child: ClipRect(
-          clipper: _PickerClipper(
-            selectedIndex: _selectedIndex,
-            isExpanded: isExpanded,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: items
-                .mapIndexed(
-                  (index, item) => _PickerItem(
-                    title: item,
-                    height: itemHeight,
-                    onTap: () {
-                      setState(() {
-                        _selectedIndex = index;
-                        isExpanded = !isExpanded;
-                      });
-                    },
-                  ),
-                )
-                .toList(),
-          ),
-        ),
       ),
     );
   }
@@ -114,6 +136,7 @@ class _PickerItem extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(
+        width: itemWidth,
         height: height,
         child: Center(
           child: Text(title, style: TextStyle(color: Colors.white)),
@@ -124,22 +147,22 @@ class _PickerItem extends StatelessWidget {
 }
 
 class _PickerClipper extends CustomClipper<Rect> {
-  final int selectedIndex;
-  final bool isExpanded;
+  final double clipHeight;
+  final double clipOffset;
 
   _PickerClipper({
-    required this.selectedIndex,
-    required this.isExpanded,
+    required this.clipOffset,
+    required this.clipHeight,
   });
 
   @override
   Rect getClip(Size size) {
     final offset = Offset(
       (size.width - itemWidth) / 2,
-      isExpanded ? 0 : selectedIndex * itemHeight,
+      clipOffset,
     );
 
-    final correctedSize = isExpanded ? size : Size(200, itemHeight);
+    final correctedSize = Size(200, clipHeight);
 
     return offset & correctedSize;
   }
