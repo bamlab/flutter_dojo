@@ -1,6 +1,5 @@
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 import 'animated_button.dart';
 

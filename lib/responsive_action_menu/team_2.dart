@@ -1,8 +1,6 @@
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:flutter/material.dart';
 
-import 'responsive_action_menu.dart';
-
 class ResponsiveActionMenuTeam2 extends TeamWidget {
   const ResponsiveActionMenuTeam2({
     Key? key,
