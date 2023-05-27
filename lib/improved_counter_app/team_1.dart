@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'dart:ui' as ui;
 
+import 'package:flutter/services.dart';
+
 class ImprovedCounterAppTeam1 extends TeamWidget {
   const ImprovedCounterAppTeam1({
     Key? key,
@@ -50,31 +52,37 @@ class _AnimatedCirclesState extends State<_AnimatedCircles>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        elevation: 0,
+      ),
+      extendBodyBehindAppBar: true,
       backgroundColor: Colors.white,
       body: Stack(
         children: [
           Align(
             alignment: Alignment.topCenter,
             child: SizedBox(
-              height: 1300,
+              height: 1200,
               width: 400,
               child: LayoutBuilder(builder: (context, constraints) {
                 return ColorFiltered(
                   colorFilter: ColorFilter.matrix(
                     [
-                      1, 0, 0, 0, 0, //
-                      0, 1, 0, 0, 0, //
-                      0, 0, 1, 0, 0, //
-                      0, 0, 0, 10000, 0, //
+                      1, 0, 0, 0, 0, // red
+                      0, 1, 0, 0, 0, // green
+                      0, 0, 1, 0, 0, // blue
+                      0, 0, 0, 10000, 0, // alpha
                     ],
                   ),
                   child: ColorFiltered(
                     colorFilter: ColorFilter.matrix(
                       [
-                        1, 0, 0, 0, 0, //
-                        0, 1, 0, 0, 0, //
-                        0, 0, 1, 0, 0, //
-                        0, 0, 0, 1, -255 / 2, //
+                        1, 0, 0, 0, 0, // red
+                        0, 1, 0, 0, 0, // green
+                        0, 0, 1, 0, 0, // blue
+                        0, 0, 0, 1, -255 / 2, // alpha
                       ],
                     ),
                     child: GestureDetector(
@@ -86,7 +94,7 @@ class _AnimatedCirclesState extends State<_AnimatedCircles>
                         painter: AnimatedCirclesPainter(
                           centerPosition: Offset(
                             constraints.maxWidth / 2,
-                            _dropAnimation.value * 465,
+                            _dropAnimation.value * constraints.maxHeight / 2,
                           ),
                           accentColor: _dropAnimationController.status ==
                                   AnimationStatus.forward
