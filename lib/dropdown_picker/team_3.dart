@@ -9,7 +9,8 @@ class DropdownPickerTeam3 extends StatefulWidget with TeamMixin {
   State<DropdownPickerTeam3> createState() => _DropdownPickerTeam3State();
 }
 
-const animationDuration = 200;
+const animationDuration = 1.0;
+const elasticPeriod = 0.7;
 const itemWidth = 200.0;
 const itemHeight = 50.0;
 const items = const ['Easy', 'Medium', 'Hard', 'Expert'];
@@ -59,7 +60,8 @@ class _PickerState extends State<_Picker> {
 
     return Center(
       child: TweenAnimationBuilder(
-        duration: Duration(milliseconds: animationDuration),
+        curve: ElasticOutCurve(elasticPeriod),
+        duration: Duration(milliseconds: (animationDuration * 1000).toInt()),
         tween: Tween<double>(
           begin: translationToCurrentItem,
           end: translationToCurrentItem,
@@ -68,14 +70,17 @@ class _PickerState extends State<_Picker> {
           return Transform.translate(
             offset: Offset(0, translationValue),
             child: TweenAnimationBuilder(
-              duration: Duration(milliseconds: animationDuration),
+              duration:
+                  Duration(milliseconds: (animationDuration * 100).toInt()),
               tween: Tween<double>(
                 begin: isExpanded ? itemHeight * _selectedIndex : 0,
                 end: isExpanded ? 0 : itemHeight * _selectedIndex,
               ),
               builder: (context, clipOffset, child) {
                 return TweenAnimationBuilder(
-                  duration: Duration(milliseconds: animationDuration),
+                  curve: ElasticOutCurve(elasticPeriod),
+                  duration: Duration(
+                      milliseconds: (animationDuration * 1000).toInt()),
                   tween: Tween(
                     begin: isExpanded ? itemHeight : totalHeight,
                     end: isExpanded ? totalHeight : itemHeight,
@@ -90,7 +95,7 @@ class _PickerState extends State<_Picker> {
                     );
                   },
                   child: ColoredBox(
-                    color: Colors.grey,
+                    color: Colors.grey.shade700,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: items
