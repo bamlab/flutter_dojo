@@ -41,24 +41,9 @@ class _LoadingIndicatorTeam1State extends State<LoadingIndicatorTeam1> {
   }
 }
 
-class GradientCircle extends StatelessWidget {
+class GradientCircle extends StatefulWidget {
   final Color color1;
   final Color color2;
-
-  final Tween<Offset> tween1 = Tween(
-    begin: Offset(0, -30),
-    end: Offset(-30, 30),
-  );
-
-  final Tween<Offset> tween2 = Tween(
-    begin: Offset(-30, 30),
-    end: Offset(30, 30),
-  );
-
-  final Tween<Offset> tween3 = Tween(
-    begin: Offset(30, 30),
-    end: Offset(0, -30),
-  );
 
   final double diameter;
 
@@ -70,33 +55,91 @@ class GradientCircle extends StatelessWidget {
   });
 
   @override
+  State<GradientCircle> createState() => _GradientCircleState();
+}
+
+class _GradientCircleState extends State<GradientCircle>
+    with TickerProviderStateMixin {
+  late final tweenSequence = TweenSequence([
+    TweenSequenceItem(
+      tween: Tween(
+        begin: Offset(0, -30),
+        end: Offset(-30, 30),
+      ),
+      weight: 1 / 6,
+    ),
+    TweenSequenceItem(
+      tween: Tween(
+        begin: Offset(-30, 30),
+        end: Offset(-30, 30),
+      ),
+      weight: 1 / 6,
+    ),
+    TweenSequenceItem(
+      tween: Tween(
+        begin: Offset(-30, 30),
+        end: Offset(30, 30),
+      ),
+      weight: 1 / 6,
+    ),
+    TweenSequenceItem(
+      tween: Tween(
+        begin: Offset(30, 30),
+        end: Offset(30, 30),
+      ),
+      weight: 1 / 6,
+    ),
+    TweenSequenceItem(
+      tween: Tween(
+        begin: Offset(30, 30),
+        end: Offset(0, -30),
+      ),
+      weight: 1 / 6,
+    ),
+    TweenSequenceItem(
+      tween: Tween(
+        begin: Offset(0, -30),
+        end: Offset(0, -30),
+      ),
+      weight: 1 / 6,
+    )
+  ]).animate(
+    CurvedAnimation(
+      parent: _controller,
+      curve: Curves.linear,
+    ),
+  );
+
+  late final _controller =
+      AnimationController(vsync: this, duration: Duration(seconds: 2));
+
+  @override
+  void initState() {
+    _controller.repeat();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return TweenAnimationBuilder(
-        duration: Duration(seconds: 1),
-        tween: tween2,
-        builder: (context, off2, child) {
-          return TweenAnimationBuilder(
-            duration: Duration(seconds: 1),
-            tween: tween1,
-            builder: (context, off1, child) {
-              return Transform.translate(
-                offset: off1,
-                child: child,
-              );
-            },
-            child: Container(
-              height: diameter,
-              width: diameter,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(diameter / 2),
-                gradient: LinearGradient(
-                  colors: [
-                    color1,
-                    color2,
-                  ],
-                ),
-              ),
+    return AnimatedBuilder(
+        animation: _controller,
+        child: Container(
+          height: widget.diameter,
+          width: widget.diameter,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(widget.diameter / 2),
+            gradient: LinearGradient(
+              colors: [
+                widget.color1,
+                widget.color2,
+              ],
             ),
+          ),
+        ),
+        builder: (context, child) {
+          return Transform.translate(
+            offset: tweenSequence.value,
+            child: child!,
           );
         });
   }
