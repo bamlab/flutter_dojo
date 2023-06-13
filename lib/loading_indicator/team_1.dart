@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bam_dojo/helpers/team_class.dart';
 
 import 'package:flutter/material.dart';
@@ -117,18 +119,29 @@ class _GradientCircleState extends State<GradientCircle>
     ),
   );
 
+  late final rotationTween = Tween(begin: 0.0, end: pi * 2).animate(
+    CurvedAnimation(
+      parent: _rotationController,
+      curve: Curves.linear,
+    ),
+  );
+
   late final _controller =
       AnimationController(vsync: this, duration: Duration(seconds: 2));
+  late final _rotationController =
+      AnimationController(vsync: this, duration: Duration(seconds: 1));
 
   @override
   void initState() {
     _controller.repeat();
+    _rotationController.repeat();
     super.initState();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _rotationController.dispose();
     super.dispose();
   }
 
@@ -139,21 +152,63 @@ class _GradientCircleState extends State<GradientCircle>
         child: Container(
           height: widget.diameter,
           width: widget.diameter,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(widget.diameter / 2),
-            gradient: LinearGradient(
-              colors: [
-                widget.color1,
-                widget.color2,
-              ],
+          child: CustomPaint(
+            size: Size(widget.diameter, widget.diameter),
+            painter: CirclePainter(
+              gradient: LinearGradient(
+                colors: [
+                  widget.color1,
+                  widget.color2,
+                ],
+              ),
             ),
           ),
         ),
         builder: (context, child) {
           return Transform.translate(
             offset: tweenSequence.value,
-            child: child!,
+            child: AnimatedBuilder(
+              animation: _rotationController,
+              builder: (context, child) {
+                return Transform.rotate(
+                  angle: rotationTween.value,
+                  child: child,
+                );
+              },
+              child: child!,
+            ),
           );
         });
   }
+}
+
+class CirclePainter extends CustomPainter {
+  final Gradient gradient;
+
+  CirclePainter({required this.gradient});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2;
+
+    final paint = Paint()
+      ..shader = gradient.createShader(
+        Rect.fromCircle(
+          center: center,
+          radius: radius,
+        ),
+      )
+      ..style = PaintingStyle.fill
+      ..blendMode = BlendMode.multiply;
+
+    canvas.drawCircle(
+      center,
+      radius,
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
