@@ -12,55 +12,7 @@ class LoadingIndicatorTeam1 extends StatefulWidget with TeamMixin {
 }
 
 class _LoadingIndicatorTeam1State extends State<LoadingIndicatorTeam1> {
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      child: Center(
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            GradientCircle(
-              color1: g1c1,
-              color2: g1c2,
-              diameter: 100,
-            ),
-            GradientCircle(
-              color1: g2c1,
-              color2: g2c2,
-              diameter: 100,
-            ),
-            GradientCircle(
-              color1: g3c1,
-              color2: g3c2,
-              diameter: 100,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class GradientCircle extends StatefulWidget {
-  final Color color1;
-  final Color color2;
-
-  final double diameter;
-
-  GradientCircle({
-    super.key,
-    required this.color1,
-    required this.color2,
-    required this.diameter,
-  });
-
-  @override
-  State<GradientCircle> createState() => _GradientCircleState();
-}
-
-class _GradientCircleState extends State<GradientCircle>
-    with TickerProviderStateMixin {
-  late final tweenSequence = TweenSequence([
+  final tweens = [
     TweenSequenceItem(
       tween: Tween(
         begin: Offset(0, -30),
@@ -103,7 +55,62 @@ class _GradientCircleState extends State<GradientCircle>
       ),
       weight: 1 / 6,
     )
-  ]).animate(
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: Center(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            GradientCircle(
+              color1: g1c1,
+              color2: g1c2,
+              diameter: 100,
+              tweens: tweens,
+            ),
+            GradientCircle(
+              color1: g2c1,
+              color2: g2c2,
+              diameter: 100,
+              tweens: tweens.sublist(2) + tweens.sublist(0, 2),
+            ),
+            GradientCircle(
+              color1: g3c1,
+              color2: g3c2,
+              diameter: 100,
+              tweens: tweens.sublist(4) + tweens.sublist(0, 4),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class GradientCircle extends StatefulWidget {
+  final Color color1;
+  final Color color2;
+  final List<TweenSequenceItem> tweens;
+
+  final double diameter;
+
+  GradientCircle({
+    super.key,
+    required this.color1,
+    required this.color2,
+    required this.diameter,
+    required this.tweens,
+  });
+
+  @override
+  State<GradientCircle> createState() => _GradientCircleState();
+}
+
+class _GradientCircleState extends State<GradientCircle>
+    with TickerProviderStateMixin {
+  late final tweenSequence = TweenSequence(widget.tweens).animate(
     CurvedAnimation(
       parent: _controller,
       curve: Curves.linear,
@@ -117,6 +124,12 @@ class _GradientCircleState extends State<GradientCircle>
   void initState() {
     _controller.repeat();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
