@@ -114,7 +114,6 @@ final _dojos = <DojoWidget>[
   DojoBouncingBNB(),
   DojoAnimatedButton(),
   DojoResponsiveActionMenu(),
-  DojoUselessSlider(),
   DojoOutOfScreen(),
   DojoReflectiveCD(),
   DojoImprovedCounterApp(),
@@ -124,6 +123,7 @@ final _dojos = <DojoWidget>[
   DojoRipplingWave(),
   DojoRipplingWave2(),
   DojoLoadingIndicator(),
+  DojoUselessSlider(),
 ];
 
 class DojoPicker extends StatelessWidget {
