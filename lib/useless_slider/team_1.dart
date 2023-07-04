@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:bam_dojo/helpers/team_class.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 class UselessSliderTeam1 extends StatefulWidget with TeamMixin {
@@ -15,7 +16,48 @@ class _UselessSliderTeam1State extends State<UselessSliderTeam1> {
 
   final Map<int, int?> gesturesIdsMap = {0: null, 1: null};
 
-  double offsetX = 0;
+  bool isGapTooClose = true;
+
+  void onOneFingerMove(PointerMoveEvent event) {
+    setState(() {
+      final id = event.pointer;
+      final number = gesturesIdsMap.entries
+          .firstWhere(
+            (element) => element.value == id,
+            orElse: () => MapEntry(-1, -1),
+          )
+          .key;
+
+      if (number == -1) return;
+
+      offsetMap[number] = min(max(0, event.localPosition.dx - 25),
+          MediaQuery.of(context).size.width - 130);
+    });
+  }
+
+  void onTwoFingersMove(PointerMoveEvent event) {
+    setState(() {
+      final id = event.pointer;
+      final number = gesturesIdsMap.entries
+          .firstWhere(
+            (element) => element.value == id,
+            orElse: () => MapEntry(-1, -1),
+          )
+          .key;
+
+      if (number == -1) return;
+
+      if (isGapTooClose) {
+        return;
+      }
+
+      final double position = min(max(0, event.localPosition.dx - 25),
+          MediaQuery.of(context).size.width - 130);
+
+      offsetMap[number] = position;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -25,89 +67,86 @@ class _UselessSliderTeam1State extends State<UselessSliderTeam1> {
           padding: EdgeInsets.all(40),
           child: Stack(
             children: [
-              Listener(
-                onPointerDown: (event) {
-                  setState(() {
-                    if (gesturesIdsMap[0] == null) {
-                      gesturesIdsMap[0] = event.pointer;
+              GestureDetector(
+                onScaleUpdate: (details) {
+                  isGapTooClose = details.horizontalScale < 2;
+                },
+                behavior: HitTestBehavior.translucent,
+                child: Listener(
+                  onPointerDown: (event) {
+                    setState(() {
+                      if (gesturesIdsMap[0] == null) {
+                        gesturesIdsMap[0] = event.pointer;
+                        return;
+                      }
+                      if (gesturesIdsMap[1] == null)
+                        gesturesIdsMap[1] = event.pointer;
+                      return;
+                    });
+                  },
+                  onPointerMove: (event) {
+                    if (gesturesIdsMap.values.none((value) => value == null)) {
+                      onTwoFingersMove(event);
                       return;
                     }
-                    if (gesturesIdsMap[1] == null)
-                      gesturesIdsMap[1] = event.pointer;
-                    return;
-                  });
-                },
-                onPointerMove: (event) {
-                  setState(() {
-                    final id = event.pointer;
-                    final number = gesturesIdsMap.entries
-                        .firstWhere(
-                          (element) => element.value == id,
-                          orElse: () => MapEntry(-1, -1),
-                        )
-                        .key;
+                    onOneFingerMove(event);
+                  },
+                  onPointerUp: (event) {
+                    setState(() {
+                      final id = event.pointer;
+                      final number = gesturesIdsMap.entries
+                          .firstWhere(
+                            (element) => element.value == id,
+                            orElse: () => MapEntry(-1, -1),
+                          )
+                          .key;
 
-                    if (number == -1) return;
+                      if (number == -1) return;
 
-                    offsetMap[number] = min(max(0, event.localPosition.dx - 25),
-                        MediaQuery.of(context).size.width - 130);
-                  });
-                },
-                onPointerUp: (event) {
-                  setState(() {
-                    final id = event.pointer;
-                    final number = gesturesIdsMap.entries
-                        .firstWhere(
-                          (element) => element.value == id,
-                          orElse: () => MapEntry(-1, -1),
-                        )
-                        .key;
+                      gesturesIdsMap[number] = null;
+                    });
+                  },
+                  // onHorizontalDragStart: (details) {
+                  //   setState(() {
+                  //     offsetX = min(max(0, details.localPosition.dx - 25),
+                  //         MediaQuery.of(context).size.width - 130);
+                  //   });
+                  // },
+                  // onHorizontalDragUpdate: (details) {
 
-                    if (number == -1) return;
-
-                    gesturesIdsMap[number] = null;
-                  });
-                },
-                // onHorizontalDragStart: (details) {
-                //   setState(() {
-                //     offsetX = min(max(0, details.localPosition.dx - 25),
-                //         MediaQuery.of(context).size.width - 130);
-                //   });
-                // },
-                // onHorizontalDragUpdate: (details) {
-
-                //   setState(() {
-                //     offsetX = min(max(0, details.localPosition.dx - 25),
-                //         MediaQuery.of(context).size.width - 130);
-                //   });
-                // },
-                // onScaleStart: (details) {
-                //   setState(() {
-                //     offsetX = min(max(0, details.localFocalPoint.dx - 25),
-                //         MediaQuery.of(context).size.width - 130);
-                //   });
-                // },
-                // onScaleUpdate: (details) {
-                //   if (details.pointerCount < 2) {
-                //     return;
-                //   }
-                //   setState(() {
-                //     details.focalPointDelta.dx;
-                //     print(details.horizontalScale);
-                //     offsetX = min(
-                //         max(
-                //             0,
-                //             details.localFocalPoint.dx +
-                //                 details.horizontalScale *
-                //                     MediaQuery.of(context).size.width -
-                //                 130 -
-                //                 25),
-                //         MediaQuery.of(context).size.width - 130);
-                //   });
-                // },
-                child: Container(
-                  height: 50,
-                  color: Colors.grey,
+                  //   setState(() {
+                  //     offsetX = min(max(0, details.localPosition.dx - 25),
+                  //         MediaQuery.of(context).size.width - 130);
+                  //   });
+                  // },
+                  // onScaleStart: (details) {
+                  //   setState(() {
+                  //     offsetX = min(max(0, details.localFocalPoint.dx - 25),
+                  //         MediaQuery.of(context).size.width - 130);
+                  //   });
+                  // },
+                  // onScaleUpdate: (details) {
+                  //   if (details.pointerCount < 2) {
+                  //     return;
+                  //   }
+                  //   setState(() {
+                  //     details.focalPointDelta.dx;
+                  //     print(details.horizontalScale);
+                  //     offsetX = min(
+                  //         max(
+                  //             0,
+                  //             details.localFocalPoint.dx +
+                  //                 details.horizontalScale *
+                  //                     MediaQuery.of(context).size.width -
+                  //                 130 -
+                  //                 25),
+                  //         MediaQuery.of(context).size.width - 130);
+                  //   });
+                  // },
+                  child: Container(
+                    height: 50,
+                    color: Colors.grey,
+                  ),
                 ),
               ),
               Positioned(

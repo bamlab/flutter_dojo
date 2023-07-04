@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:flutter/material.dart';
 
@@ -14,69 +12,72 @@ class _UselessSliderTeam2State extends State<UselessSliderTeam2> {
   double offsetX = 0;
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      child: Center(
-        child: Padding(
-          padding: EdgeInsets.all(40),
-          child: Stack(
-            children: [
-              GestureDetector(
-                onHorizontalDragStart: (details) {
-                  setState(() {
-                    offsetX = min(max(0, details.localPosition.dx - 25),
-                        MediaQuery.of(context).size.width - 130);
-                  });
-                },
-                onHorizontalDragUpdate: (details) {
-                  setState(() {
-                    offsetX = min(max(0, details.localPosition.dx - 25),
-                        MediaQuery.of(context).size.width - 130);
-                  });
-                },
-                onScaleStart: (details) {
-                  setState(() {
-                    offsetX = min(max(0, details.localFocalPoint.dx - 25),
-                        MediaQuery.of(context).size.width - 130);
-                  });
-                },
-                onScaleUpdate: (details) {
-                  if (details.pointerCount < 2) {
-                    return;
-                  }
-                  setState(() {
-                    details.focalPointDelta.dx;
-                    print(details.horizontalScale);
-                    offsetX = min(
-                        max(
-                            0,
-                            details.localFocalPoint.dx +
-                                details.horizontalScale *
-                                    MediaQuery.of(context).size.width -
-                                130 -
-                                25),
-                        MediaQuery.of(context).size.width - 130);
-                  });
-                },
-                child: Container(
-                  height: 50,
-                  color: Colors.grey,
-                ),
-              ),
-              Positioned(
-                left: offsetX,
-                child: IgnorePointer(
-                  child: Container(
-                    height: 50,
-                    width: 50,
-                    color: Colors.red,
-                  ),
-                ),
-              )
-            ],
-          ),
+    return MyApp();
+  }
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Touch Position'),
+        ),
+        body: TouchWidget(),
+      ),
+    );
+  }
+}
+
+class TouchWidget extends StatefulWidget {
+  @override
+  _TouchWidgetState createState() => _TouchWidgetState();
+}
+
+class _TouchWidgetState extends State<TouchWidget> {
+  List<Offset> _points = <Offset>[];
+
+  void _updatePoints(PointerEvent event) {
+    setState(() {
+      _points = List.from(_points)..add(event.position);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      onPointerDown: _updatePoints,
+      onPointerMove: _updatePoints,
+      onPointerUp: (PointerEvent event) => _updatePoints(event),
+      child: CustomPaint(
+        painter: TouchPainter(points: _points),
+        child: ConstrainedBox(
+          constraints: BoxConstraints.tight(Size.infinite),
         ),
       ),
     );
+  }
+}
+
+class TouchPainter extends CustomPainter {
+  TouchPainter({this.points});
+
+  final List<Offset>? points;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.black
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 5.0;
+    for (final point in points ?? []) {
+      canvas.drawCircle(point, 30.0, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(TouchPainter oldDelegate) {
+    return oldDelegate.points != points;
   }
 }
