@@ -12,11 +12,20 @@ class UselessSliderTeam1 extends StatefulWidget with TeamMixin {
 }
 
 class _UselessSliderTeam1State extends State<UselessSliderTeam1> {
-  final Map<int, double?> offsetMap = {0: 0, 1: null};
+  final Map<int, double?> xMap = {0: 0, 1: null};
 
   final Map<int, int?> gesturesIdsMap = {0: null, 1: null};
 
   bool isGapTooClose = true;
+  bool squareSplitted = false;
+  double gap = 1;
+  double? focalPointX;
+
+  bool get isGapInSplitAnimationRange => !(gap <= 1 || gap > 2);
+  bool get shouldStretch => isGapInSplitAnimationRange && !squareSplitted;
+
+  double get firstSquareWidth => shouldStretch ? 50 * gap : 50;
+  double get firstSquareHeight => shouldStretch ? 50 / gap : 50;
 
   void onOneFingerMove(PointerMoveEvent event) {
     setState(() {
@@ -30,7 +39,7 @@ class _UselessSliderTeam1State extends State<UselessSliderTeam1> {
 
       if (number == -1) return;
 
-      offsetMap[number] = min(max(0, event.localPosition.dx - 25),
+      xMap[number] = min(max(0, event.localPosition.dx),
           MediaQuery.of(context).size.width - 130);
     });
   }
@@ -47,14 +56,14 @@ class _UselessSliderTeam1State extends State<UselessSliderTeam1> {
 
       if (number == -1) return;
 
-      if (isGapTooClose) {
-        return;
+      if (!isGapTooClose) {
+        squareSplitted = true;
       }
 
-      final double position = min(max(0, event.localPosition.dx - 25),
+      final double position = min(max(0, event.localPosition.dx),
           MediaQuery.of(context).size.width - 130);
 
-      offsetMap[number] = position;
+      xMap[number] = position;
     });
   }
 
@@ -66,10 +75,17 @@ class _UselessSliderTeam1State extends State<UselessSliderTeam1> {
         child: Padding(
           padding: EdgeInsets.all(40),
           child: Stack(
+            alignment: Alignment.center,
             children: [
               GestureDetector(
                 onScaleUpdate: (details) {
                   isGapTooClose = details.horizontalScale < 2;
+                  gap = details.horizontalScale;
+                  focalPointX = details.localFocalPoint.dx;
+                },
+                onScaleEnd: (details) {
+                  gap = 1;
+                  focalPointX = null;
                 },
                 behavior: HitTestBehavior.translucent,
                 child: Listener(
@@ -149,29 +165,50 @@ class _UselessSliderTeam1State extends State<UselessSliderTeam1> {
                   ),
                 ),
               ),
-              Positioned(
-                left: offsetMap[0],
-                child: IgnorePointer(
-                  child: Container(
-                    height: 50,
-                    width: 50,
-                    color: Colors.red,
-                  ),
-                ),
-              ),
-              if (offsetMap[1] != null)
-                Positioned(
-                  left: offsetMap[1],
-                  child: IgnorePointer(
-                    child: Container(
-                      height: 50,
-                      width: 50,
-                      color: Colors.red,
-                    ),
-                  ),
+              CenterPositionedSquare(
+                  centerX: !squareSplitted && focalPointX != null
+                      ? focalPointX!
+                      : xMap[0]!,
+                  height: firstSquareHeight,
+                  width: firstSquareWidth),
+              if (xMap[1] != null && squareSplitted)
+                CenterPositionedSquare(
+                  centerX: xMap[1]!,
+                  height: 50,
+                  width: 50,
                 ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class CenterPositionedSquare extends StatelessWidget {
+  const CenterPositionedSquare({
+    super.key,
+    required this.centerX,
+    required this.height,
+    required this.width,
+  });
+
+  final double centerX;
+  final double height;
+  final double width;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      left: centerX - width / 2,
+      child: IgnorePointer(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.red,
+          ),
+          height: height,
+          width: width,
         ),
       ),
     );
