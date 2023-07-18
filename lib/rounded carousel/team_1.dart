@@ -22,7 +22,14 @@ class _RoundedCarouselTeam1State extends State<RoundedCarouselTeam1> {
         body: PageView(
           controller: _controller,
           children: roundedCarouselImages
-              .map((imageUrl) => Image.network(imageUrl))
+              .map(
+                (imageUrl) => Center(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Image.network(imageUrl),
+                  ),
+                ),
+              )
               .toList(),
         ),
       ),
