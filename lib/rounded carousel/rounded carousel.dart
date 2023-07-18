@@ -11,6 +11,14 @@ final _teams = <TeamMixin>[
   RoundedCarouselTeam3(),
 ];
 
+const roundedCarouselImages = [
+  'https://picsum.photos/200/400?index=12',
+  'https://picsum.photos/200/400?index=15',
+  'https://picsum.photos/200/400?index=16',
+  'https://picsum.photos/200/400?index=24',
+  'https://picsum.photos/200/400?index=32',
+];
+
 class DojoRoundedCarousel extends DojoWidget {
   DojoRoundedCarousel({
     Key? key,
