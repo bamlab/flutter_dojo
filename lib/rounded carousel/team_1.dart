@@ -1,5 +1,6 @@
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:bam_dojo/rounded%20carousel/rounded%20carousel.dart';
+import 'package:collection/collection.dart';
 
 import 'package:flutter/material.dart';
 
@@ -22,11 +23,13 @@ class _RoundedCarouselTeam1State extends State<RoundedCarouselTeam1> {
         body: PageView(
           controller: _controller,
           children: roundedCarouselImages
-              .map(
-                (imageUrl) => Center(
+              .mapIndexed(
+                (index, imageUrl) => Center(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(100),
-                    child: Image.network(imageUrl),
+                    child: Image.network(
+                      imageUrl,
+                    ),
                   ),
                 ),
               )
