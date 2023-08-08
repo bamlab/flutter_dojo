@@ -32,12 +32,19 @@ class _InteractiveToolbarTeam3State extends State<InteractiveToolbarTeam3> {
                   borderRadius: BorderRadius.circular(15),
                 ),
                 elevation: 20,
-                child: ListView.builder(
-                  controller: _scrollController,
-                  padding: EdgeInsets.zero,
-                  itemBuilder: (context, index) {
-                    return _ToolbarItem();
-                  },
+                child: OverflowBox(
+                  alignment: Alignment.centerLeft,
+                  minWidth: 70,
+                  maxWidth: 1200,
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    padding: EdgeInsets.zero,
+                    itemBuilder: (context, index) {
+                      return _ToolbarItem(
+                        isFocused: index == 2,
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
@@ -49,7 +56,9 @@ class _InteractiveToolbarTeam3State extends State<InteractiveToolbarTeam3> {
 }
 
 class _ToolbarItem extends StatefulWidget {
-  _ToolbarItem();
+  _ToolbarItem({required this.isFocused});
+
+  final bool isFocused;
 
   final color = randomColor();
   final imageUrl =
@@ -63,30 +72,38 @@ class _ToolbarItemState extends State<_ToolbarItem> {
   @override
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
-      duration: Duration(milliseconds: 300),
+      duration: Duration(milliseconds: 500),
       tween: Tween(begin: 1 / 5, end: 1),
       builder: (context, value, child) {
         final avatarRadius = 20 * value;
 
         return SizedBox(
           height: 70,
-          width: 70,
-          child: Padding(
-            padding: EdgeInsets.all(35 - avatarRadius * 5 / 4),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: widget.color,
-                borderRadius: BorderRadius.circular(8),
-              ),
+          child: OverflowBox(
+            alignment: Alignment.centerLeft,
+            minHeight: widget.isFocused ? double.infinity : 70,
+            minWidth: widget.isFocused ? double.infinity : 70,
+            child: SizedBox(
+              width: 200,
+              height: 200,
               child: Padding(
-                padding: EdgeInsets.all(avatarRadius * 1 / 4),
-                child: CircleAvatar(
-                  radius: avatarRadius,
-                  backgroundColor: Colors.transparent,
-                  child: Image.network(
-                    widget.imageUrl,
-                    fit: BoxFit.cover,
-                    alignment: Alignment.center,
+                padding: EdgeInsets.all(35 - avatarRadius * 5 / 4),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: widget.color,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(avatarRadius * 1 / 4),
+                    child: CircleAvatar(
+                      radius: avatarRadius,
+                      backgroundColor: Colors.transparent,
+                      child: Image.network(
+                        widget.imageUrl,
+                        fit: BoxFit.cover,
+                        alignment: Alignment.center,
+                      ),
+                    ),
                   ),
                 ),
               ),
