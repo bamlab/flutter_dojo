@@ -40,9 +40,7 @@ class _InteractiveToolbarTeam3State extends State<InteractiveToolbarTeam3> {
                     controller: _scrollController,
                     padding: EdgeInsets.zero,
                     itemBuilder: (context, index) {
-                      return _ToolbarItem(
-                        isFocused: index == 2,
-                      );
+                      return _ToolbarItem();
                     },
                   ),
                 ),
@@ -56,9 +54,7 @@ class _InteractiveToolbarTeam3State extends State<InteractiveToolbarTeam3> {
 }
 
 class _ToolbarItem extends StatefulWidget {
-  _ToolbarItem({required this.isFocused});
-
-  final bool isFocused;
+  _ToolbarItem();
 
   final color = randomColor();
   final imageUrl =
@@ -68,40 +64,61 @@ class _ToolbarItem extends StatefulWidget {
   State<_ToolbarItem> createState() => _ToolbarItemState();
 }
 
-class _ToolbarItemState extends State<_ToolbarItem> {
+class _ToolbarItemState extends State<_ToolbarItem>
+    with TickerProviderStateMixin {
+  late final _animationController = AnimationController(
+    vsync: this,
+    duration: Duration(milliseconds: 100),
+  );
+
+  late final _selectedWidthTween = Tween(begin: 70.0, end: 200.0).animate(
+    CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOut,
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 500),
       tween: Tween(begin: 1 / 5, end: 1),
-      builder: (context, value, child) {
-        final avatarRadius = 20 * value;
+      builder: (context, scaleValue, child) {
+        final avatarRadius = 20 * scaleValue;
 
         return SizedBox(
           height: 70,
-          child: OverflowBox(
-            alignment: Alignment.centerLeft,
-            minHeight: widget.isFocused ? double.infinity : 70,
-            minWidth: widget.isFocused ? double.infinity : 70,
-            child: SizedBox(
-              width: 200,
-              height: 200,
-              child: Padding(
-                padding: EdgeInsets.all(35 - avatarRadius * 5 / 4),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: widget.color,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(avatarRadius * 1 / 4),
-                    child: CircleAvatar(
-                      radius: avatarRadius,
-                      backgroundColor: Colors.transparent,
-                      child: Image.network(
-                        widget.imageUrl,
-                        fit: BoxFit.cover,
-                        alignment: Alignment.center,
+          child: AnimatedBuilder(
+            animation: _selectedWidthTween,
+            builder: (context, child) {
+              return OverflowBox(
+                alignment: Alignment.centerLeft,
+                minWidth: 70,
+                maxWidth: _selectedWidthTween.value,
+                child: child,
+              );
+            },
+            child: GestureDetector(
+              onTapDown: (_) => _animationController.forward(),
+              onTapUp: (_) => _animationController.reverse(),
+              child: SizedBox.expand(
+                child: Padding(
+                  padding: EdgeInsets.all(35 - avatarRadius * 5 / 4),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: widget.color,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(avatarRadius * 1 / 4),
+                      child: CircleAvatar(
+                        radius: avatarRadius,
+                        backgroundColor: Colors.transparent,
+                        child: Image.network(
+                          widget.imageUrl,
+                          fit: BoxFit.cover,
+                          alignment: Alignment.center,
+                        ),
                       ),
                     ),
                   ),
