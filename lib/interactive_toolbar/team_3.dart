@@ -15,6 +15,8 @@ class InteractiveToolbarTeam3 extends StatefulWidget with TeamMixin {
 class _InteractiveToolbarTeam3State extends State<InteractiveToolbarTeam3> {
   final _scrollController = ScrollController();
 
+  Map<GlobalKey, bool> _selected = {};
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,12 +38,20 @@ class _InteractiveToolbarTeam3State extends State<InteractiveToolbarTeam3> {
                   alignment: Alignment.centerLeft,
                   minWidth: 70,
                   maxWidth: 1200,
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    padding: EdgeInsets.zero,
-                    itemBuilder: (context, index) {
-                      return _ToolbarItem();
-                    },
+                  child: Listener(
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      padding: EdgeInsets.zero,
+                      itemBuilder: (context, index) {
+                        return _ToolbarItem(
+                          addKey: (key) =>
+                              setState(() => _selected[key] = false),
+                          removeKey: (key) =>
+                              setState(() => _selected.remove(key)),
+                          selected: _selected,
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -54,7 +64,15 @@ class _InteractiveToolbarTeam3State extends State<InteractiveToolbarTeam3> {
 }
 
 class _ToolbarItem extends StatefulWidget {
-  _ToolbarItem();
+  _ToolbarItem({
+    required this.addKey,
+    required this.removeKey,
+    required this.selected,
+  });
+
+  final void Function(GlobalKey) addKey;
+  final void Function(GlobalKey) removeKey;
+  final Map<GlobalKey, bool> selected;
 
   final color = randomColor();
   final imageUrl =
@@ -66,6 +84,8 @@ class _ToolbarItem extends StatefulWidget {
 
 class _ToolbarItemState extends State<_ToolbarItem>
     with TickerProviderStateMixin {
+  GlobalKey _key = GlobalKey();
+
   late final _animationController = AnimationController(
     vsync: this,
     duration: Duration(milliseconds: 100),
@@ -79,8 +99,31 @@ class _ToolbarItemState extends State<_ToolbarItem>
   );
 
   @override
+  void initState() {
+    super.initState();
+    widget.addKey(_key);
+  }
+
+  @override
+  void dispose() {
+    widget.removeKey(_key);
+
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isSelected = widget.selected[_key] == true;
+
+    if (isSelected) {
+      _animationController.forward();
+    } else {
+      _animationController.reverse();
+    }
+
     return TweenAnimationBuilder<double>(
+      key: _key,
       duration: Duration(milliseconds: 500),
       tween: Tween(begin: 1 / 5, end: 1),
       builder: (context, scaleValue, child) {
@@ -98,27 +141,23 @@ class _ToolbarItemState extends State<_ToolbarItem>
                 child: child,
               );
             },
-            child: GestureDetector(
-              onTapDown: (_) => _animationController.forward(),
-              onTapUp: (_) => _animationController.reverse(),
-              child: SizedBox.expand(
-                child: Padding(
-                  padding: EdgeInsets.all(35 - avatarRadius * 5 / 4),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: widget.color,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(avatarRadius * 1 / 4),
-                      child: CircleAvatar(
-                        radius: avatarRadius,
-                        backgroundColor: Colors.transparent,
-                        child: Image.network(
-                          widget.imageUrl,
-                          fit: BoxFit.cover,
-                          alignment: Alignment.center,
-                        ),
+            child: SizedBox.expand(
+              child: Padding(
+                padding: EdgeInsets.all(35 - avatarRadius * 5 / 4),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: widget.color,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(avatarRadius * 1 / 4),
+                    child: CircleAvatar(
+                      radius: avatarRadius,
+                      backgroundColor: Colors.transparent,
+                      child: Image.network(
+                        widget.imageUrl,
+                        fit: BoxFit.cover,
+                        alignment: Alignment.center,
                       ),
                     ),
                   ),
