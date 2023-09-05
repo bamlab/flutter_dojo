@@ -20,6 +20,7 @@ import 'package:bam_dojo/hero_no_hero/hero_no_hero.dart';
 import 'package:bam_dojo/hole_cards/hole_cards.dart';
 import 'package:bam_dojo/icon_morph/icon_morph.dart';
 import 'package:bam_dojo/improved_counter_app/improved_counter_app.dart';
+import 'package:bam_dojo/interactive%20toolbar%20simple/interactive%20toolbar%20simple.dart';
 import 'package:bam_dojo/interactive_toolbar/interactive_toolbar.dart';
 import 'package:bam_dojo/loading_indicator/loading_indicator.dart';
 import 'package:bam_dojo/out_of_screen/out_of_screen.dart';
@@ -128,6 +129,7 @@ final _dojos = <DojoWidget>[
   DojoUselessSlider(),
   DojoRoundedCarousel(),
   DojoInteractiveToolbar(),
+  DojoInteractiveToolbarSimple(),
 ];
 
 class DojoPicker extends StatelessWidget {
