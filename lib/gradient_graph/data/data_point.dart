@@ -13,16 +13,17 @@ class DataPoint {
 
 List<DataPoint> getDataPoints() {
   final lines = const CsvToListConverter()
-      .convert(_csvString, fieldDelimiter: ';')
+      .convert(_csvString, fieldDelimiter: ';', eol: "\n")
       .slice(1);
 
   final points = <DataPoint>[];
   for (final line in lines) {
     points.add(DataPoint(
       date: DateTime.parse(line[0]),
-      value: double.parse(line[2]),
+      value: line[2],
     ));
   }
+  print(points);
 
   return points;
 }
