@@ -23,7 +23,6 @@ List<DataPoint> getDataPoints() {
       value: line[2],
     ));
   }
-  print(points);
 
   return points;
 }
