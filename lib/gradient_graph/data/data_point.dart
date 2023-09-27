@@ -24,7 +24,7 @@ List<DataPoint> getDataPoints() {
     ));
   }
 
-  return points;
+  return points.reversed.toList();
 }
 
 const _csvString = """datetime;open;high;low;close;volume
