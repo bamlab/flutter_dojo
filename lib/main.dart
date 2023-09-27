@@ -4,6 +4,7 @@ import 'package:bam_dojo/animated_button/animated_button.dart';
 import 'package:bam_dojo/animated_likes/animated_likes.dart';
 import 'package:bam_dojo/bank/bank.dart';
 import 'package:bam_dojo/bank_animation/bank_animation.dart';
+import 'package:bam_dojo/blockudoku/blockudoku.dart';
 import 'package:bam_dojo/bouncing_bnb/bouncing_bnb.dart';
 import 'package:bam_dojo/calendar/calendar.dart';
 import 'package:bam_dojo/calendar_drag/calendar_drag.dart';
@@ -132,6 +133,7 @@ final _dojos = <DojoWidget>[
   DojoInteractiveToolbar(),
   DojoInteractiveToolbarSimple(),
   DojoGradientGraph(),
+  DojoBlockudoku(),
 ];
 
 class DojoPicker extends StatelessWidget {
