@@ -2,6 +2,8 @@ import 'package:bam_dojo/helpers/team_class.dart';
 
 import 'package:flutter/material.dart';
 
+const _maxFlex = 1000000;
+
 class TweenAnimationBuilderExampleTeam1 extends StatefulWidget with TeamMixin {
   final teamName = 'Team1';
 
@@ -12,6 +14,8 @@ class TweenAnimationBuilderExampleTeam1 extends StatefulWidget with TeamMixin {
 
 class _TweenAnimationBuilderExampleTeam1State
     extends State<TweenAnimationBuilderExampleTeam1> {
+  int endFlex = 0;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,7 +24,13 @@ class _TweenAnimationBuilderExampleTeam1State
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextButton(onPressed: () {}, child: Text("Play")),
+              TextButton(
+                  onPressed: () {
+                    setState(() {
+                      endFlex = _maxFlex;
+                    });
+                  },
+                  child: Text("Play")),
               SizedBox(height: 50),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
@@ -30,11 +40,21 @@ class _TweenAnimationBuilderExampleTeam1State
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Row(
-                    children: [
-                      Expanded(child: Container(color: Colors.green)),
-                      Expanded(child: Container(color: Colors.grey)),
-                    ],
+                  child: TweenAnimationBuilder(
+                    tween: IntTween(begin: 0, end: endFlex),
+                    duration: Duration(seconds: 5),
+                    builder: (context, value, _) => Row(
+                      children: [
+                        Expanded(
+                          flex: value,
+                          child: Container(color: Colors.green),
+                        ),
+                        Expanded(
+                          flex: _maxFlex - value,
+                          child: Container(color: Colors.grey),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               )
