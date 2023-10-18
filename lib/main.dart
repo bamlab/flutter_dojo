@@ -21,6 +21,7 @@ import 'package:bam_dojo/hero_list/hero_list.dart';
 import 'package:bam_dojo/hero_no_hero/hero_no_hero.dart';
 import 'package:bam_dojo/hole_cards/hole_cards.dart';
 import 'package:bam_dojo/icon_morph/icon_morph.dart';
+import 'package:bam_dojo/implicit_animation/implicit_animation.dart';
 import 'package:bam_dojo/improved_counter_app/improved_counter_app.dart';
 import 'package:bam_dojo/interactive%20toolbar%20simple/interactive%20toolbar%20simple.dart';
 import 'package:bam_dojo/interactive_toolbar/interactive_toolbar.dart';
@@ -136,6 +137,7 @@ final _dojos = <DojoWidget>[
   DojoGradientGraph(),
   DojoBlockudoku(),
   DojoTweenAnimationBuilderExample(),
+  DojoImplicitAnimation(),
 ];
 
 class DojoPicker extends StatelessWidget {
