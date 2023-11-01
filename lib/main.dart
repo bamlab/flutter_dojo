@@ -12,6 +12,7 @@ import 'package:bam_dojo/calendar_responsive/calendar_responsive.dart';
 import 'package:bam_dojo/card_hover/card_hover.dart';
 import 'package:bam_dojo/card_shredder/card_shredder.dart';
 import 'package:bam_dojo/cloth/cloth.dart';
+import 'package:bam_dojo/custom_painter/custom_painter.dart';
 import 'package:bam_dojo/drag_this/drag_this.dart';
 import 'package:bam_dojo/elastic_scroll/elastic_scroll.dart';
 import 'package:bam_dojo/gradient_graph/gradient_graph.dart';
@@ -138,6 +139,7 @@ final _dojos = <DojoWidget>[
   DojoBlockudoku(),
   DojoTweenAnimationBuilderExample(),
   DojoImplicitAnimation(),
+  DojoCustomPainter(),
 ];
 
 class DojoPicker extends StatelessWidget {
