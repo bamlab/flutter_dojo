@@ -2,7 +2,7 @@ import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:flutter/material.dart';
 
 class CustomPainterTeam1 extends StatefulWidget with TeamMixin {
-  final teamName = 'Team2';
+  final teamName = 'Team1';
 
   @override
   State<CustomPainterTeam1> createState() => _CustomPainterTeam1State();

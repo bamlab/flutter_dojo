@@ -1,4 +1,3 @@
-import 'package:bam_dojo/calendar_drag%20copy/team_1.dart';
 import 'package:bam_dojo/helpers/team_class.dart';
 import 'package:collection/collection.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
