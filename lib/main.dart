@@ -34,6 +34,7 @@ import 'package:bam_dojo/pulsating_cubes/pulsating_cubes.dart';
 import 'package:bam_dojo/reflective_cd/reflective_cd.dart';
 import 'package:bam_dojo/rippling_wave/rippling_wave.dart';
 import 'package:bam_dojo/rippling_wave2/rippling_wave.dart';
+import 'package:bam_dojo/rive/rive.dart';
 import 'package:bam_dojo/rolling_counter/rolling_counter.dart';
 import 'package:bam_dojo/rounded%20carousel/rounded%20carousel.dart';
 import 'package:bam_dojo/scroll_progress/scroll_progress.dart';
@@ -140,6 +141,7 @@ final _dojos = <DojoWidget>[
   DojoTweenAnimationBuilderExample(),
   DojoImplicitAnimation(),
   DojoCustomPainter(),
+  DojoRive(),
 ];
 
 class DojoPicker extends StatelessWidget {
