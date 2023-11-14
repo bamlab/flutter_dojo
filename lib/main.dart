@@ -2,6 +2,7 @@ import 'package:bam_dojo/airtags/airtags.dart';
 import 'package:bam_dojo/airtags_animation/airtags.dart';
 import 'package:bam_dojo/animated_button/animated_button.dart';
 import 'package:bam_dojo/animated_likes/animated_likes.dart';
+import 'package:bam_dojo/animated_switcher/animated_switcher.dart';
 import 'package:bam_dojo/bank/bank.dart';
 import 'package:bam_dojo/bank_animation/bank_animation.dart';
 import 'package:bam_dojo/blockudoku/blockudoku.dart';
@@ -142,6 +143,7 @@ final _dojos = <DojoWidget>[
   DojoImplicitAnimation(),
   DojoCustomPainter(),
   DojoRive(),
+  DojoAnimatedSwitcher(),
 ];
 
 class DojoPicker extends StatelessWidget {
