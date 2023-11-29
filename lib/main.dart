@@ -6,6 +6,7 @@ import 'package:bam_dojo/animated_switcher/animated_switcher.dart';
 import 'package:bam_dojo/bank/bank.dart';
 import 'package:bam_dojo/bank_animation/bank_animation.dart';
 import 'package:bam_dojo/blockudoku/blockudoku.dart';
+import 'package:bam_dojo/blockudoku2/blockudoku2.dart';
 import 'package:bam_dojo/bouncing_bnb/bouncing_bnb.dart';
 import 'package:bam_dojo/calendar/calendar.dart';
 import 'package:bam_dojo/calendar_drag/calendar_drag.dart';
@@ -146,6 +147,7 @@ final _dojos = <DojoWidget>[
   DojoRive(),
   DojoAnimatedSwitcher(),
   DojoHeroAnimations(),
+  DojoBlockudoku2(),
 ];
 
 class DojoPicker extends StatelessWidget {
