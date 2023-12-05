@@ -48,6 +48,7 @@ import 'package:bam_dojo/swooping_card/swooping_card.dart';
 import 'package:bam_dojo/time_machine/time_machine.dart';
 import 'package:bam_dojo/tween_animation_builder_example/tween_animation_builder_example.dart';
 import 'package:bam_dojo/twofingers/twofingers.dart';
+import 'package:bam_dojo/understanding_constraints/understanding_constraints.dart';
 import 'package:bam_dojo/useless_slider/useless_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -148,6 +149,7 @@ final _dojos = <DojoWidget>[
   DojoAnimatedSwitcher(),
   DojoHeroAnimations(),
   DojoBlockudoku2(),
+  DojoUnderstandingConstraints(),
 ];
 
 class DojoPicker extends StatelessWidget {
