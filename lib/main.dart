@@ -34,6 +34,7 @@ import 'package:bam_dojo/out_of_screen/out_of_screen.dart';
 import 'package:bam_dojo/page_color_transition/page_color_transition.dart';
 import 'package:bam_dojo/physics/physics.dart';
 import 'package:bam_dojo/pulsating_cubes/pulsating_cubes.dart';
+import 'package:bam_dojo/quizz_animation/quizz.dart';
 import 'package:bam_dojo/reflective_cd/reflective_cd.dart';
 import 'package:bam_dojo/rippling_wave/rippling_wave.dart';
 import 'package:bam_dojo/rippling_wave2/rippling_wave.dart';
@@ -150,6 +151,7 @@ final _dojos = <DojoWidget>[
   DojoHeroAnimations(),
   DojoBlockudoku2(),
   DojoUnderstandingConstraints(),
+  DojoQuizz(),
 ];
 
 class DojoPicker extends StatelessWidget {
