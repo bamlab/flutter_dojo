@@ -17,6 +17,7 @@ import 'package:bam_dojo/cloth/cloth.dart';
 import 'package:bam_dojo/custom_painter/custom_painter.dart';
 import 'package:bam_dojo/drag_this/drag_this.dart';
 import 'package:bam_dojo/elastic_scroll/elastic_scroll.dart';
+import 'package:bam_dojo/flutter_animate/flutter_animate.dart';
 import 'package:bam_dojo/gradient_graph/gradient_graph.dart';
 import 'package:bam_dojo/haptic/haptic.dart';
 import 'package:bam_dojo/helpers/team_class.dart';
@@ -152,6 +153,7 @@ final _dojos = <DojoWidget>[
   DojoBlockudoku2(),
   DojoUnderstandingConstraints(),
   DojoQuizz(),
+  DojoFlutterAnimate(),
 ];
 
 class DojoPicker extends StatelessWidget {
