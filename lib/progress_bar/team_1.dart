@@ -14,12 +14,39 @@ class _ProgressBarTeam1State extends State<ProgressBarTeam1> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: Center(
-          child: Container(
-            width: 100,
-            height: 100,
-            color: Colors.red,
-          ),
+        body: Home(),
+      ),
+    );
+  }
+}
+
+class Home extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        width: 200.0,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              width: 180.0,
+              child: Divider(
+                color: Colors.grey,
+                thickness: 2,
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(
+                  4,
+                  (index) => Icon(
+                        Icons.circle,
+                        color: index == 0 ? Colors.red : Colors.grey,
+                        size: index == 0 ? 24.0 : 16.0,
+                      )),
+            )
+          ],
         ),
       ),
     );
