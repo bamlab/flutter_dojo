@@ -11,8 +11,8 @@ final _teams = <TeamMixin>[
   AppBarTeam3(),
 ];
 
-class DojoProgressBar extends DojoWidget {
-  DojoProgressBar({
+class DojoAppBar extends DojoWidget {
+  DojoAppBar({
     Key? key,
   }) : super(key: key, dojoName: 'AppBar', teams: _teams);
 }

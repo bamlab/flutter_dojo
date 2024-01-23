@@ -56,6 +56,7 @@ import 'package:bam_dojo/useless_slider/useless_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'app_bar/app_bar.dart';
 import 'dropdown_picker/dropdown_picker.dart';
 import 'perspective/perspective.dart';
 import 'responsive_action_menu/responsive_action_menu.dart';
@@ -156,6 +157,7 @@ final _dojos = <DojoWidget>[
   DojoQuizz(),
   DojoFlutterAnimate(),
   DojoProgressBar(),
+  DojoAppBar(),
 ];
 
 class DojoPicker extends StatelessWidget {

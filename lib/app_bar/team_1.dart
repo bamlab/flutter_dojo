@@ -10,16 +10,27 @@ class AppBarTeam1 extends StatefulWidget with TeamMixin {
 }
 
 class _AppBarTeam1State extends State<AppBarTeam1> {
+  var index = 0;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: Center(
-          child: Container(
-            width: 100,
-            height: 100,
-            color: Colors.red,
-          ),
+        backgroundColor: switch (index) {
+          0 => Colors.red,
+          1 => Colors.green,
+          2 => Colors.blue,
+          _ => Colors.cyan,
+        },
+        bottomNavigationBar: BottomNavigationBar(
+          items: [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.settings), label: 'Settings'),
+            // BottomNavigationBarItem(icon: Icon(Icons.logout), label: 'Logout'),
+          ],
+          currentIndex: index,
+          onTap: (value) => setState(() => index = value),
         ),
       ),
     );
