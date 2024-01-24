@@ -2,14 +2,16 @@ import 'package:bam_dojo/helpers/team_class.dart';
 
 import 'package:flutter/material.dart';
 
-class AppBarTeam1 extends StatefulWidget with TeamMixin {
-  final teamName = 'Team1';
+class AnimatedNavigationBarTeam2 extends StatefulWidget with TeamMixin {
+  final teamName = 'Team2';
 
   @override
-  State<AppBarTeam1> createState() => _AppBarTeam1State();
+  State<AnimatedNavigationBarTeam2> createState() =>
+      _AnimatedNavigationBarTeam2State();
 }
 
-class _AppBarTeam1State extends State<AppBarTeam1> {
+class _AnimatedNavigationBarTeam2State
+    extends State<AnimatedNavigationBarTeam2> {
   var index = 0;
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,6 @@ class _AppBarTeam1State extends State<AppBarTeam1> {
             BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
             BottomNavigationBarItem(
                 icon: Icon(Icons.settings), label: 'Settings'),
-            // BottomNavigationBarItem(icon: Icon(Icons.logout), label: 'Logout'),
           ],
           currentIndex: index,
           onTap: (value) => setState(() => index = value),
