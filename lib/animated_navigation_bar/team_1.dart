@@ -19,6 +19,7 @@ class _AnimatedNavigationBarTeam1State extends State<AnimatedNavigationBarTeam1>
   late Tween<double> _tween = Tween(begin: 0.0, end: 0.0);
 
   var index = 0;
+
   @override
   void dispose() {
     _controller.dispose();
