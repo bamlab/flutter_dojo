@@ -1,6 +1,7 @@
 import 'package:bam_dojo/airtags/airtags.dart';
 import 'package:bam_dojo/airtags_animation/airtags.dart';
 import 'package:bam_dojo/animated_button/animated_button.dart';
+import 'package:bam_dojo/animated_circle/animated_circle.dart';
 import 'package:bam_dojo/animated_likes/animated_likes.dart';
 import 'package:bam_dojo/animated_switcher/animated_switcher.dart';
 import 'package:bam_dojo/bank/bank.dart';
@@ -158,6 +159,7 @@ final _dojos = <DojoWidget>[
   DojoFlutterAnimate(),
   DojoProgressBar(),
   DojoAnimatedNavigationBar(),
+  DojoAnimatedCircle(),
 ];
 
 class DojoPicker extends StatelessWidget {
