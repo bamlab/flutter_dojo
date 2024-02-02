@@ -1,4 +1,5 @@
 import 'package:bam_dojo/animated_circle/team_3.dart';
+import 'package:bam_dojo/animated_circle/team_4.dart';
 import 'package:flutter/material.dart';
 
 import '../helpers/team_class.dart';
@@ -9,6 +10,7 @@ final _teams = <TeamMixin>[
   AnimatedCircleTeam1(),
   AnimatedCircleTeam2(),
   AnimatedCircleTeam3(),
+  AnimatedCircleTeam4(),
 ];
 
 class DojoAnimatedCircle extends DojoWidget {
