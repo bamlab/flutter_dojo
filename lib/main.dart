@@ -4,6 +4,7 @@ import 'package:bam_dojo/animated_button/animated_button.dart';
 import 'package:bam_dojo/animated_circle/animated_circle.dart';
 import 'package:bam_dojo/animated_likes/animated_likes.dart';
 import 'package:bam_dojo/animated_switcher/animated_switcher.dart';
+import 'package:bam_dojo/animation_vs_delivery_animated_padding/animation_vs_delivery_animated_padding.dart';
 import 'package:bam_dojo/bank/bank.dart';
 import 'package:bam_dojo/bank_animation/bank_animation.dart';
 import 'package:bam_dojo/blockudoku/blockudoku.dart';
@@ -160,6 +161,7 @@ final _dojos = <DojoWidget>[
   DojoProgressBar(),
   DojoAnimatedNavigationBar(),
   DojoAnimatedCircle(),
+  DojoAnimationVsDeliveryAnimatedPadding(),
 ];
 
 class DojoPicker extends StatelessWidget {
